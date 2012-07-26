@@ -1,0 +1,26 @@
+= Yeast Image Analysis =
+
+
+== Issues ==
+
+ * Sort feature drop down to alphabetic order and fix the first letter to be uniform among features.
+
+ * 3 different images (bin) to be added to image pop-up (.click() event).
+ 
+ * Series count is not constant, ie. [1,3]
+
+ * Time series should start from 1 for all selected features.
+
+ * The statistics div might get more feature details and possible a histogram or a piechart.
+
+Next skype call 3.8 Thu 2pm.
+
+=== todo ===
+
+ * Ask Pekka which one to use: svn or git for code.google../p/yimaa?
+
+ * 3D PCA plot / images
+ 
+ * 20 different experiments (update the drop down dynamically) folder structure in the server 
+
+ * Statistics layout
