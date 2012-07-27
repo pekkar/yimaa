@@ -28,3 +28,4 @@ Next skype call 3.8 Thu 2pm.
  * Statistics layout
 
  * Possible new pulldown for charts involving multiple/groups of features
+ * Remove tipsy from image scroll? (Duplicate information)
