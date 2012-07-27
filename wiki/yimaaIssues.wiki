@@ -10,7 +10,8 @@
  
  * Series count is not constant, ie. [1,3]
 
- * Time series should start from 1 for all selected features.
+ * ~~Time series should start from 1 for all selected features.~~
+ => Uses Highchart's own function now to detect the charts min and max values
 
  * The statistics div might get more feature details and possible a histogram or a piechart.
 
