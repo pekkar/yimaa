@@ -3,7 +3,8 @@
 
 == Issues ==
 
- * Sort feature drop down to alphabetic order and fix the first letter to be uniform among features.
+ * ~~Sort feature drop down to alphabetic order and fix the first letter to be uniform among features. ~~  
+ => All are lowercase now
 
  * 3 different images (bin) to be added to image pop-up (.click() event).
  
