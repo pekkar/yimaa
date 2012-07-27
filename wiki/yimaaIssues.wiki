@@ -24,3 +24,5 @@ Next skype call 3.8 Thu 2pm.
  * 20 different experiments (update the drop down dynamically) folder structure in the server 
 
  * Statistics layout
+
+ * Possible new pulldown for charts involving multiple/groups of features
