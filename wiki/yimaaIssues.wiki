@@ -15,13 +15,15 @@
 
  * The statistics div might get more feature details and possible a histogram or a piechart.
 
+ * Relative size for images in the slider
+
 Next skype call 3.8 Thu 2pm.
 
 === todo ===
 
  * Ask Pekka which one to use: svn or git for code.google../p/yimaa?
 
- * 3D PCA plot / images
+ * 3D PCA plot / images / rotation
  
  * 20 different experiments (update the drop down dynamically) folder structure in the server 
 
