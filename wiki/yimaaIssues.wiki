@@ -17,7 +17,10 @@
 
  * Relative size for images in the slider
 
-Next skype call 3.8 Thu 2pm.
+ ~~Next skype call 3.8 Thu 2pm.~~
+ => cancelled
+ 
+ * Jump to #image introduced 
 
 === todo ===
 
@@ -30,4 +33,5 @@ Next skype call 3.8 Thu 2pm.
  * Statistics layout
 
  * Possible new pulldown for charts involving multiple/groups of features
+
  * Remove tipsy from image scroll? (Duplicate information)
