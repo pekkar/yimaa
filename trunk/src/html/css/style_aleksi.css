@@ -1,0 +1,292 @@
+#main_div{
+}
+#tty_logo{
+	margin-top:400px;
+}
+#tab_navigation{
+	position:absolute;
+	margin-top:20px;
+	display:inline;
+	margin-left: 0px;
+	height: 70px;
+	width: 700px;
+}
+.tab_navi{
+ 	list-style-type:none;	
+	display:inline;
+	text-decoration:none;
+	margin-left:4px;
+}
+#PCAdiv{
+	max-height:600px;
+	max-width:600px;
+	padding-left:20px;
+}
+.tab_navi li {
+	margin-left:8px;
+ 	display:inline;
+}
+.tab_navi a {
+	text-decoration:none;
+	color:black;
+}
+.tab_navi a:visited {
+	color:black;
+	text-decoration:none;
+}
+.tab_navi a:hover {
+	font-style: italic;
+}
+.naviButton{
+	border: 1.5px solid black;
+	border-radius:5px;
+	background-color:#c8b2b2;
+	padding-left:4px;
+	padding-right:4px;
+	padding-top:1px;
+	padding-bottom:1px;
+}
+#vis_image{
+	margin-left:110px;
+}
+
+#vis_image img {
+	max-height: 120px;
+	max-width: 640px;
+}
+img > span, .span_carousel{
+	font-size:9px;
+	font-color:white;
+	color:white;
+	margin-left:4px;
+/*
+	margin-top:-60px;
+	float:left;
+*/
+}
+p.span_carousel{
+	margin-left: -64px;
+	float: left;
+	text-align:center;
+	margin-top: 55px;
+/*
+	line-height:96px;
+*/
+}
+.dtls_span {
+	display:block;
+}
+#stats1 input, .dtls_span input {
+	width:2.5em;
+}
+h{
+	font-size:30px;
+	padding-left:40px;
+	color:white;
+	text-shadow:black 2px 2px 2px;
+}
+#jumpItem{
+	width: 50px;
+/*
+	margin-top:-40px;
+*/
+	float: left;
+}
+body {
+	background: #DDD;
+	margin:0px;
+}
+#header{
+	background-image:url('banneri2.jpg');
+	background-size: 700px 45px;
+	
+/*
+	background: -webkit-linear-gradient(left, #d5eaa8 0%,#DDD 80%);
+/*cdeb8e ce588f
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cdeb8e), color-stop(100%,#ce588f));
+*/
+	height:45px;
+	padding-top:5px;
+}
+#header a:link {
+	text-decoration:none;
+}
+.dd{
+	margin-left: 250px;	
+	margin-top: -30px;
+
+}
+.pcacb {
+	display:none;
+        left:600;
+        top:100;
+	
+}
+span.pcacb{
+	margin-left:10px;
+}
+
+select {
+	max-height:20px;
+	height:20px;
+}
+button.pcacb  {
+	position: absolute;
+        margin-top: -30px;
+        margin-left:520px;
+}
+
+#features {
+	margin-top: -30px;
+	margin-left:380px;
+}
+.navigation{
+	margin-bottom:5px;
+	list-style-type:none;
+	display:inline;
+	text-decoration:none;
+}
+.navigation a:link, a:visited {
+	color: black;
+	text-decoration:none;
+	cursor:pointer;
+}
+#tab_navigation p {
+	margin-top: -20px;
+	margin-left:350px;
+	font-size: 10px;
+}
+li.navigation {
+	padding-left:25px;	
+	padding-right: 10px;
+	margin-left:2px;
+	margin-right:2px;
+/*
+	border: 1px solid black;
+	border-radius: 5px;
+*/
+}
+li.navigation a {
+	width:85px;
+}
+li a:hover {
+	font-style:bold;
+	cursor:pointer;
+}
+.navigation:hover {
+	font-weight:bold;
+	cursor:pointer;
+}
+
+#main_navigation{
+	margin-top:0px;
+	border: 1px solid black;
+	background:#D4D0C8;
+	padding-left:0px;
+/*
+	margin-top:60px;
+*/
+	margin-left:0px;
+}
+.axis{
+	stroke:white;
+	
+}
+g line, g, .tick{
+/*	stroke:white;
+	color:white;
+this interacts with highcharts css idk which it is
+is it the stroke or color but it overrides the axis labels
+*/
+	font-size:12px;
+	background:white;
+}
+path.domain{
+	stroke:white;
+}
+svg{
+	/*
+	background:gray;
+	*/
+	width:800px;
+	height:600px;
+	border: 1px solid white;
+	
+}
+#plot1 {
+	margin-left:110px;
+}
+/*
+.plot_svg{
+	width:200px;
+	height:200px;
+}
+div .ui-slider{
+	margin-top:10px;
+}
+
+*/
+.plot{
+	/*
+	padding-left:100px;	
+	*/
+	margin-top:70px;
+	position: absolute;
+	float:left;
+}
+#plot2{
+	margin-left:50px;
+}
+
+#stats{
+	position:absolute;
+	margin-left:780px;
+	float:left;
+/*
+	margin-top:160px;
+
+	padding-top:30px;
+*/
+	margin-top:50px;
+	width:270px;
+	height:400px;
+	border: 1px solid black;
+	background: #D4D0C8; 
+	padding-left: 10px;
+	border-radius:10px;
+	/*
+	float:left;
+	*/
+}
+#stats2 {
+/*
+	margin-top:-200px;
+*/
+}
+
+.stats_list{
+/*
+ 	float:left;
+	*
+	padding-left:10px;
+	*/
+	margin-top:0px;
+/*	width:200px;
+	height:500px;
+*/
+	list-style-type:none;
+	font-size:16px;
+}
+
+ul li.listing{
+/*	color:black;
+*/
+	color:black;
+	padding-top:.2emm
+}
+
+#scroll{
+	position:absolute;
+	margin-top: 480px;
+	padding-bottom: 20px;
+}

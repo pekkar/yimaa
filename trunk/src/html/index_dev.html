@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<script src="jquery-1.7.2.js"></script>
+	<script src="jquery.galleria.min.js"></script>
+	<script src="jquery.tipsy.js"></script>
+	<script src="jquery.mousewheel.js"></script>
+	<script src="jquery.jcarousel.js"></script>
+	<script src="jquery.ui.core.js"></script>
+	<script src="jquery.ui.widget.js"></script>
+	<script src="jquery.ui.mouse.js"></script>
+	<script src="jquery.ui.tabs.js"></script>
+	<script src="jquery.ui.slider.js"></script>
+	<script src="highcharts.src.js"></script>
+	<script src="highslide-full.js"></script>
+	<script src="grid.js"></script>
+<!--
+	<script src="dt_fl.js"></script>
+-->
+	<script src="hiiva.js"></script>
+	<link rel="stylesheet" href="tipsy.css">
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="jsor_skin.css">
+	<link rel="stylesheet" href="jquery.ui.all.css">
+	<link rel="stylesheet" href="jquery.ui.tabs.css">
+	<link rel="stylesheet" href="highslide.css">
+	<link rel="stylesheet" href="slider.css">
+	<style>
+	/*body{background:rgba(173, 161, 161, 0.85);}
+*/
+	/*body{background:black;}
+	*/
+	h1{font-size:1.2em; color:white}
+/*
+	.scroll-pane { overflow: auto; width: 99%; float:left; }
+	.scroll-content { width: 2440px; float: left; }
+	.scroll-content-item { 
+	width: 100px; height: 100px; float: left; margin: 10px; 
+	font-size: 3em; line-height: 96px; text-align: center; }
+	.scroll-bar-wrap { clear: left; padding: 0 4px 0 2px; 
+	margin: 0 -1px -1px -1px; }
+	.scroll-bar-wrap .ui-slider { background: none; border:0; 
+	height: 2em; margin: 0 auto;  }
+	.scroll-bar-wrap .ui-handle-helper-parent { position: relative; 
+	width: 100%; height: 100%; margin: 0 auto; }
+	.scroll-bar-wrap .ui-slider-handle { top:.2em; height: 1.5em; }
+	.scroll-bar-wrap .ui-slider-handle .ui-icon { margin: -8px auto 0; 
+	position: relative; top: 50%; }
+*/	
+
+	</style>
+	<title>Yeast Image Analysis</title>
+</head>
+<body>
+
+	<div id="header">
+	<a href="index.html">
+	<h>Yeast Image Analysis</h>
+	</a>
+	<ul id="main_navigation">
+		<li class="navigation">
+			<a href="index.html" id="home"title="Home">Home</a>
+		</li>
+		<li class="navigation">
+			<a href="http://csb.cs.tut.fi/index.php" target="_blank" id="CSBTUT" title="CSB TUT">CSB</a>
+		</li>
+		<li class="navigation">
+			<a id="dudley" target="_blank" href="https://www.systemsbiology.org/dudley-group" title="Dudley Group">Dudley Group</a>
+		</li>
+		<li class="navigation">
+			<a id="Shmulevich" target="_blank" href="https://www.systemsbiology.org/shmulevich-group" title="Shmulevich lab">Smulevich lab</a>
+		</li>
+		<li class="navigation">
+			<a id="faq" target="_blank" href="http://code.google.com/p/yimaa/" title="Info">Info</a>
+		</li>
+	</ul>
+	</div>
+	<div id="main_div">
+		<div id="tab_navigation" >
+			<ul class="tab_navi">
+				<li><a href="#plot1" class="naviButton" id="visChart">Chart</a></li>
+				<li><a href="#vis_image" class="naviButton" id="visImage">Images</a></li>
+				<li><a href="#PCAdiv" class="naviButton" id="visPCA" span title="PCA Plotting Requires 2 checked boxes" class="tooltip"></span> PCA</a></li>
+			</ul>
+		</div>
+		<div id="pca_cb_div" ></div>
+		<div id="plot1" class="plot" >
+		</div>
+	<div id="stats">
+		<div id="stats1">
+		</div>
+		<div id="stats2">
+		</div>
+	</div>
+	
+	<div id="scroll">
+	</div>
+
+		<div id="vis_image">
+			<table>
+			<tr id="tr1"></tr>
+			<tr id="tr2"></tr>
+			<tr id="tr3"></tr>
+			</table>
+		</div>		
+		<div id="PCAdiv">
+		</div>
+		
+	</div>
+<script>
+/*
+$(document).ready( function() {
+    $("#dtSet").multiSelect();
+});
+*/
+</script>
+</body>
+</html>
+
