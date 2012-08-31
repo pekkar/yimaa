@@ -1,5 +1,7 @@
 $(function(){
 console.log("start retrieving initial images" + new Date());
+var yimaa_mode = 'chart';
+
 hs.addSlideshow({
 	repeat:false,
 	useControls:true,
@@ -32,9 +34,9 @@ var retrieve_exp_url='/cgi-bin/retrieve_exp.pl';
 $.getJSON('header_lowercase.json',function(datas){
 	$('#tab_navigation').append('<select id="features" <span title="Image Classification Features - See Info Features for more Info" class="tooltip"></span> class="dd">');
 	//$('#features').setLabel("Feature");
-	$('#features').change(initCallbackFunction);
-	$('#tab_navigation').append('<select id="dtSet" <span title="Dudley Group Natural Variation Experiments" class="tooltip"></span> class="dd" >');
-	$('#dtSet').change(function (ov, nv){
+	//$('#features').change(initCallbackFunction);
+	$('#tab_navigation').append('<select id="dtSet" title="Natural Variation Experiments" multiple="multiple">');
+/*	$('#dtSet').change(function (ov, nv){
 			var strain = $('#dtSet').val();		
 			$.getJSON(retrieve_exp_url, {exp:strain}, function(datas){
         			carouselItems=datas;
@@ -44,7 +46,7 @@ $.getJSON('header_lowercase.json',function(datas){
 				uploadNewData();
 			});			
 		}
-	);
+	);*/
 	//$('#dtSet').label("Strain");
 	var i;
 	for(i=0;i<datas.length;i+=1){
@@ -52,6 +54,15 @@ $.getJSON('header_lowercase.json',function(datas){
 				return '<option value="'+datas[i]+'">'+datas[i]+'</option>';
 		})
 	}
+	 $("#features").multiselect({
+        noneSelectedText: 'Choose dataset',
+        minWidth: '180',
+        header: false,
+	selectedList: 1,
+        multiple: false,
+	classes: 'features', 
+        click: uploadNewData
+    });
 });
 
 $('#stats1').append('<p>'+
@@ -156,24 +167,24 @@ $('#pca_cb_div').append(
 );
 
 $('input:checkbox').change(function(){
-	/*var maxSelected=2;
+	/*var maxSelected='2';
 	var nowSelected=$('input:checked').size();
 	if(nowSelected > maxSelected){
 		this.checked=false;
 	}else if (nowSelected == 2){
 		initScatter();
 	}*/
-	var cb1_checked = document.getElementById("cb1").checked; 
-	var cb2_checked = document.getElementById("cb2").checked;
+        var cb1_checked = document.getElementById("cb1").checked;
+        var cb2_checked = document.getElementById("cb2").checked;
         var cb3_checked = document.getElementById("cb3").checked;
-	if ((cb1_checked && cb2_checked) || (cb1_checked && cb3_checked) || (cb2_checked && cb3_checked))
-	{	
-		initScatter();
-	}
-	if (cb1_checked && cb2_checked && cb3_checked){
-		alert("Sorry, only two PCA components can be selected at once");
-	} 
-		
+        if ((cb1_checked && cb2_checked) || (cb1_checked && cb3_checked) || (cb2_checked && cb3_checked))
+        {
+                initScatter($('#dtSet').val().toString());
+        }
+        if (cb1_checked && cb2_checked && cb3_checked){
+                alert("Sorry, only two PCA components can be selected at once");
+		this.checked =false;
+        }		
 });
 
 /*$('#pca_cb_div').append(
@@ -209,8 +220,7 @@ $('#visChart').click(function(){
 	$('#vis_image').css("display","none");
 	$('#PCAdiv').css("display","none");
 	$('.pcacb').css("display","none");
-
- $("#dtSet").multiselect('option', {multiple: false, open: function(event, ui){
+    $("#dtSet").multiselect('option', {multiple: false, open: function(event, ui){
         $("#dtSet").multiselect("uncheckAll");}
     });
 
@@ -220,19 +230,17 @@ $('#PCAdiv').css("display","none");
 $('#pca_cb_div').css("display","none");
 
 $('#visPCA').click(function(){
-        $('#PCAdiv').css("display","inline");
-        $('#plot1').css("display","none");
-        $('#vis_image').css("display","none");
-        $('#features').css("display","none");
-        $('#pca_cb_div').css("display","inline");
-        $('.pcacb').css("display","inline");
-        $('button.pcacb').css("display","inline");
-        initScatter();
+	$('#PCAdiv').css("display","inline");
+	$('#plot1').css("display","none");
+	$('#vis_image').css("display","none");
+	$('.features').css("display","none");
+	$('#pca_cb_div').css("display","inline");
+	$('.pcacb').css("display","inline");
+	$('button.pcacb').css("display","inline");
+	yimaa_mode = 'PCA';
+	initScatter();
     $("#dtSet").multiselect('option', {multiple: true, open: function(event, ui){}});
 });
-
-
-
 
 //========================END==========================================
 var carouselItems;
@@ -249,7 +257,7 @@ if (strain == undefined || strain == ""){
 $.getJSON(retrieve_exp_url, {exp:strain}, function(exp_icons){
 //$.getJSON(imagepl, function(datas){
 	carouselItems=exp_icons;
-	initCallbackFunction();
+	initCallbackFunction(strain);
 	carouselLoad(strain, exp_icons);
 });
 
@@ -261,68 +269,96 @@ $.getJSON('/cgi-bin/fluffy_dtset.pl', function(datas){
 			return '<option value="'+datas[l]+'">'+datas[l]+'</option>';
 		})
 	}
-	$("#dtSet").multiselect({
+    $("#dtSet").multiselect({
         noneSelectedText: 'Choose dataset',
         minWidth: '180',
-            selectedList: 3,
+	    selectedList: 3,
         header: false,
         multiple: false,
         click: function(event, ui){
-        var retrieve_exp_url='/cgi-bin/retrieve_exp.pl';
         var strain = ui.value;
-                        $.getJSON(retrieve_exp_url, {exp:strain}, function(datas){
-                                carouselItems=datas;
-                                //initCallbackFunction();
-                                carouselLoad(strain, datas);
-                                uploadNewData();
-                        });
+	if (yimaa_mode == 'chart'){
+        var retrieve_exp_url='/cgi-bin/retrieve_exp.pl';       
+			$.getJSON(retrieve_exp_url, {exp:strain}, function(datas){
+        			carouselItems=datas;
+				//alert("load carousel");
+        			//initCallbackFunction();
+        			carouselLoad(strain, datas);
+				uploadNewData();
+			});			
        /* console.log([ui.value, ui.text]);
-        //$("#dtSet").va(ui.text);
-        */
-
+	alert("select " + ui.text);
+	//$("#dtSet").va(ui.text);
+	*/
+        }
+	if (yimaa_mode == 'PCA'){
+		//alert('call retrieve_pca for strains ' + strain + ' what to do about icon slider?');
+		var val_arr = $('#dtSet').multiselect('getChecked');
+		var strain = '';
+		for (var i = 0; i < val_arr.length; i++){
+			strain = strain + val_arr[i].value + ',';
+		}
+		initScatter(strain.substring(0,strain.length-1));
+	}
         },
         open: function(event, ui){
             $("#dtSet").multiselect("uncheckAll");
         }
+    
     });
-});
 
+    
+
+});
 var scatterData;
-function initScatter(){
-	if($('#dtSet option:selected')[0]===undefined){
+function initScatter(experiments){
+/*	if($('#dtSet option:selected')[0]===undefined){
 		$('#dtSet').val('F29_A1');
 		$('#dtSet option[value="F29_A1"]').attr('selected','selected');
-	}
-	var t2 = $('#dtSet option:selected')[0].value;
-//TODO Change to /pc/ ...PC.csv
-	var post_url="/cgi-bin/fluffy_pc.pl";
-	var c=$('input:checked');
+	}*/
+
+	//var experiments = $('#dtSet').val().toString();
+	//TODO Change to /pc/ ...PC.csv
+	//var post_url="/cgi-bin/fluffy_pc.pl";
+	
+	if (experiments == undefined)
+		experiments = 'F29_A1';
+
+        var post_url="/cgi-bin/retrieve_pca.pl";
+
+/*	var c=$('input:checked');
 	if(c.length<=1){
 		$('#cb1').attr('checked','true');
 		$('#cb2').attr('checked','true');
-	};
+	;};
+	//c=$('input:checked');
+	//var c1=c[0]['id'];
+	//var c2=c[1]['id'];
+*/
 
-	/*c=$('input:checked');	
-	var c1=c[0]['id'];
-	var c2=c[1]['id'];
-	*/
+if (! document.getElementById("cb1").checked && ! document.getElementById("cb2").checked  && ! document.getElementById("cb3").checked ){
+         $('#cb1').attr('checked','true');
+                $('#cb2').attr('checked','true');
+}
+
 	var cb1_checked = document.getElementById("cb1").checked;
         var cb2_checked = document.getElementById("cb2").checked;
         var cb3_checked = document.getElementById("cb3").checked;
-	var c1id = "";
-	var c2id = "";
-	if (cb1_checked)
-		c1id = "cb1";
-	if (cb2_checked){
-		if (c1id == ""){
-			c1id = "cb2";
-			c2id = "cb3";
-		}else{
-			c2id = "cb2";
-		}
-	}else{	
-		c2id = "cb3";
-	}
+
+        var c1id = "";
+        var c2id = "";
+        if (cb1_checked)
+                c1id = "cb1";
+        if (cb2_checked){
+                if (c1id == ""){
+                        c1id = "cb2";
+                        c2id = "cb3";
+                }else{
+                        c2id = "cb2";
+                }
+        }else{
+                c2id = "cb3";
+        }
 	
 	var sOptions={
 		chart:{
@@ -332,7 +368,7 @@ function initScatter(){
 			zoomType:'xy'
 		},
 		title:{	
-			text:t2
+			text:experiments
 		},
 		xAxis:{
 			stratOnTick: true,
@@ -377,7 +413,7 @@ function initScatter(){
 		},
 		series:[]	
 	};
-	$.getJSON(post_url,{folder:t2, ca:c1id, cb:c2id} ,function(dts){
+	$.getJSON(post_url,{experiments:experiments, ca:c1id, cb:c2id} ,function(dts){
 		var j;
 		scatterData=dts;
 		for(j=0;j<dts.length;j++){
@@ -391,7 +427,7 @@ function initScatter(){
 
 function uploadNewData(){
 if($('#PCAdiv').css("display")==='inline'){
-	initScatter();
+	initScatter(null);
 	return;
 }
 //$('#dtSet').change(function(){
@@ -422,36 +458,36 @@ if($('#PCAdiv').css("display")==='inline'){
 
 };
 */
-function initCallbackFunction(){
+function initCallbackFunction(strain){
 
-	//$('#features option[value="area"]').attr('selected','selected');
-	var strain = $('#dtSet').val();
+	$('#features option[value="area"]').attr('selected','selected');
+	$('#dtSet').val(strain);
 	$('#dtSet option[value="' + strain + '"]').attr('selected','selected');
-	//var t=$('#features option:selected ')[0].value;
-        var feature_selected = $('#features').val();
-	$('#selected_feature').text(feature_selected);
+	var t=$('#features option:selected ')[0].value;
+	$('#selected_feature').text(t);
 	if(hchart) hchart.showLoading('Loading...');
-		//var _url="/cgi-bin/fluffy_features.pl";
+		var post_url="/cgi-bin/fluffy_features.pl";
 		var j,minval,maxval;
-		console.log("Before retrieving features for " + strain  + " " + feature_selected + " " + new Date());
-		$.get("/cgi-bin/retrieve_features.pl",{yfeature:feature_selected,yexperiment:strain},function(dts){
-		console.log("Returned from GET " + feature_selected + " time " + new Date());
+		console.log("Initial getting " + t + " time " + new Date());
+		$.get(post_url,{feature:t, folder:strain},function(dts){
+		console.log("Returned from GET " + t + " time " + new Date());
+		//hchart=new Highcharts.Chart({
 	hoptions={
 		chart: {
 			renderTo:'plot1',
 			type:'spline',
 			borderColor:''
-		},title: {text:feature_selected,
+		},title: {text:t,
 			align:'right',
 			style:{
 				color:'black',
 				fontWeight:'bold'
 			}},
-		xAxis:{ title: 'Time',
+		xAxis:{
 			margin:[10,10,10,10],
 			min:0
 			//max:500
-		},yAxis:{	title:'Expression'},
+		},yAxis:{	title:''},
 		legend:{
 			align: 'left',
 			floating: true,
@@ -548,7 +584,7 @@ function initCallbackFunction(){
 	hchart=new Highcharts.Chart(hoptions);
 	$('#min').text(minval);
 	$('#max').text(maxval);
-	console.log("Done getting " + feature_selected + " time " + new Date());
+	console.log("Done getting " + t + " time " + new Date());
 	});//end get
 $(".scroll-pane").css("overflow","hidden");
 };//EOF initCallbackFunction
@@ -668,7 +704,6 @@ $('.scroll-content').mousewheel(function(event, delta, deltaX, deltaY){
 
 console.log("done retieving initial images" +new Date());
 });//EOF $();
-
 
 
 //============================EOF==========================
