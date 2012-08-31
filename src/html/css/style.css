@@ -142,11 +142,12 @@ button.pcacb  {
         left:520px;
 }
 */
-#features {
+.features {
 	position: absolute;
 	top: 0px;
 	left: 430px;
 }
+
 .navigation{
 	margin-bottom:5px;
 	list-style-type:none;
