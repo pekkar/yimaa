@@ -56,7 +56,7 @@ $.getJSON('header_lowercase.json',function(datas){
 	}
 	 $("#features").multiselect({
         noneSelectedText: 'Choose dataset',
-        minWidth: '180',
+        minWidth: '140',
         header: false,
 	selectedList: 1,
         multiple: false,
@@ -192,7 +192,7 @@ $('input:checkbox').change(function(){
 );
 */
 
-$('#tab_navigation button').click(initScatter);
+$('button.ui-multiselect').click(initScatter);
 	
 //================DIVS====================================
 
@@ -200,7 +200,8 @@ $('#visImage').click(function(){
 	//$('#plot1').toggle();
 	$('#plot1').css("display","none");
 	$('#PCAdiv').css("display","none");
-	$('.dd').each(function(ind,ele){
+	
+        $('.dd').each(function(ind,ele){
 		$(ele).css("display","none");
 	})
 	$('#vis_image img').each(function(i,e){
@@ -211,6 +212,10 @@ $('#visImage').click(function(){
 });
 
 $('#visChart').click(function(){
+        $('#stats').css("display","");
+        //$('#stats2').css("display","");
+
+	$('.features').css("display","");
 	$('#plot1').css("display","inline");
 	//$('#vis_image').removeClass("plot");
 	$('.dd').each(function(ind,ele){
@@ -231,6 +236,9 @@ $('#pca_cb_div').css("display","none");
 
 $('#visPCA').click(function(){
 	$('#PCAdiv').css("display","inline");
+        $('#stats').css("display","none");
+	//$('#stats2').css("display","none");
+
 	$('#plot1').css("display","none");
 	$('#vis_image').css("display","none");
 	$('.features').css("display","none");
@@ -271,10 +279,11 @@ $.getJSON('/cgi-bin/fluffy_dtset.pl', function(datas){
 	}
     $("#dtSet").multiselect({
         noneSelectedText: 'Choose dataset',
-        minWidth: '180',
+        minWidth: '140',
 	    selectedList: 3,
         header: false,
         multiple: false,
+        classes: "dtSet",
         click: function(event, ui){
         var strain = ui.value;
 	if (yimaa_mode == 'chart'){
@@ -312,29 +321,11 @@ $.getJSON('/cgi-bin/fluffy_dtset.pl', function(datas){
 });
 var scatterData;
 function initScatter(experiments){
-/*	if($('#dtSet option:selected')[0]===undefined){
-		$('#dtSet').val('F29_A1');
-		$('#dtSet option[value="F29_A1"]').attr('selected','selected');
-	}*/
 
-	//var experiments = $('#dtSet').val().toString();
-	//TODO Change to /pc/ ...PC.csv
-	//var post_url="/cgi-bin/fluffy_pc.pl";
-	
 	if (experiments == undefined)
 		experiments = 'F29_A1';
 
         var post_url="/cgi-bin/retrieve_pca.pl";
-
-/*	var c=$('input:checked');
-	if(c.length<=1){
-		$('#cb1').attr('checked','true');
-		$('#cb2').attr('checked','true');
-	;};
-	//c=$('input:checked');
-	//var c1=c[0]['id'];
-	//var c2=c[1]['id'];
-*/
 
 if (! document.getElementById("cb1").checked && ! document.getElementById("cb2").checked  && ! document.getElementById("cb3").checked ){
          $('#cb1').attr('checked','true');
@@ -359,7 +350,6 @@ if (! document.getElementById("cb1").checked && ! document.getElementById("cb2")
         }else{
                 c2id = "cb3";
         }
-	
 	var sOptions={
 		chart:{
 			renderTo:'PCAdiv',
@@ -374,6 +364,12 @@ if (! document.getElementById("cb1").checked && ! document.getElementById("cb2")
 			stratOnTick: true,
 			endOnTick:true
 		},
+		tooltip: {
+                	formatter: function() {
+                        	return 'Frame: ' + this.point.id + ' X:'+
+                        	this.x +', Y:'+ this.y;
+                	}
+            	},
 		plotOptions:{
 			scatter:{
 				marker:{
@@ -406,7 +402,38 @@ if (! document.getElementById("cb1").checked && ! document.getElementById("cb2")
 								}
 							}
 						}		
-					}//MOEOF
+					},//MOEOF
+					click: function(eve){
+						//add code to see which series was selected to figured out the right strain being []
+						var imgc = this['id'];
+						var yindex = Math.floor(this.series.index/3);
+                                                var strain = $('#dtSet').val()[yindex]; //for multiple
+                        console.log("20110826-" + strain + "_1"  + "_" + imgc);
+                                            $("#20110826-" + strain + "_1"  + "_" + imgc).addClass("selected_img");
+                        			var serie = 1;
+                                                 $('#vis_image table tr').each(function(i,e){
+                                                        var img_link = strain + "/20110826-" + strain + "_" + serie + "_" + imgc + ".png";
+                                                        serie = serie + 1;
+                                                        $(e).html('<a href="'+img_link+ '" target="_blank"><img src="'+img_link + '" style"=visibility: visible"></a>');
+                                                })
+                                                if($('#vis_image').css("visibility")=='visible'){
+                                                        $('#vis_image img').each(function(){
+                                                                $(this).css("visibility",'visible');
+                                                        });
+                                                }
+                                                $('#visImage').click();
+                                                var offset = 22;//this['id'] / 20;
+                                                if (this['id'] < 420) offset = 20;
+                                                if (this['id'] < 320) offset = 17;
+                                                if (this['id'] < 250) offset = 15;
+                                                if (this['id'] < 200) offset = 14;
+                                                if (this['id'] < 150) offset = 12;
+                                                if (this['id'] < 100) offset = 10;
+                                                if (this['id'] < 70)  offset = 7;
+                                                if (this['id'] < 40)  offset = 3;
+                                                var yframe = this['id'] - offset;
+                                                $('.scroll-bar').slider('value', yframe);
+					}
 					}
 				}
 			}
