@@ -13,9 +13,10 @@
 	<script src="jquery.ui.tabs.js"></script>
 	<script src="jquery.ui.slider.js"></script>
 	<script src="highcharts.src.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script src="highslide-full.js"></script>
 	<script src="grid.js"></script>
-	<script src="jquery.multiSelect.js"></script>
+	<script src="jquery.multiselect.js"></script>
 	<script src="hiiva.js"></script>
 	<link rel="stylesheet" href="tipsy.css">
 	<link rel="stylesheet" href="style.css">
@@ -24,7 +25,10 @@
 	<link rel="stylesheet" href="jquery.ui.tabs.css">
 	<link rel="stylesheet" href="highslide.css">
 	<link rel="stylesheet" href="slider.css">
-	<link rel="stylesheet" href="jquery.multiSelect.css">
+    <link rel="stylesheet" href="jquery.multiselect.css">
+    <link rel="stylesheet" type="text/css" href="jquery-humanity-css/jquery-ui-1.8.23.custom.css" />
+
+
 	<style>
 	/*body{background:rgba(173, 161, 161, 0.85);}
 */
@@ -77,10 +81,10 @@
 	</div>
 	<div id="main_div">
 		<div id="tab_navigation" >
-			<ul class="tab_navi">
-				<li><a href="#plot1" class="naviButton" id="visChart">Chart</a></li>
-				<li><a href="#vis_image" class="naviButton" id="visImage">Images</a></li>
-				<li><a href="#PCAdiv" class="naviButton" id="visPCA" span title="PCA Plotting Requires 2 checked boxes" class="tooltip"></span> PCA</a></li>
+            <ul class="tab_navi">
+                <li><button id="visChart" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Chart</span></button></li>
+				<li><button id="visImage" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Images</span></button></li>
+                <li><button  id="visPCA" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" > <span  class="ui-button-text">PCA</span> </button></li>
 			</ul>
 		</div>
 		<div id="pca_cb_div" ></div>
