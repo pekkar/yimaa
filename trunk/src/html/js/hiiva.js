@@ -1,6 +1,7 @@
 $(function(){
 console.log("start retrieving initial images" + new Date());
 var yimaa_mode = 'chart';
+var previousSelected = "";
 
 hs.addSlideshow({
 	repeat:false,
@@ -133,6 +134,29 @@ $('#image_span').keydown(function(){
 	};
 });
 
+
+function getYiiImages(strain, imgc){
+        var serie = 1;
+        var img_link = strain + "/20110826-" + strain + "_" + serie + "_" + imgc + ".png";
+        var binary_img_link = (strain + "/binary/" + strain + "_" + serie + "_" + imgc + ".png").replace("20110826-","");
+        serie = serie + 1;
+        $('#tr1').html('<a href="' + img_link + '" target="_blank"><img src="' + img_link + '" style"=visibility: visible"></a>');
+        $('#tr1b').html('<a href="'+binary_img_link+ '" target="_blank"><img src="'+binary_img_link + '" style"=visibility: visible"></a>');
+	img_link = strain + "/20110826-" + strain + "_" + serie + "_" + imgc + ".png";        
+	binary_img_link = (strain + "/binary/" + strain + "_" + serie + "_" + imgc + ".png").replace("20110826-","");
+	$('#tr2').html('<a href="' + img_link + '" target="_blank"><img src="' + img_link + '" style"=visibility: visible"></a>');
+        $('#tr2b').html('<a href="'+binary_img_link+ '" target="_blank"><img src="'+binary_img_link + '" style"=visibility: visible"></a>');
+        serie = serie + 1;
+	img_link = strain + "/20110826-" + strain + "_" + serie + "_" + imgc + ".png";                
+	binary_img_link = (strain + "/binary/" + strain + "_" + serie + "_" + imgc + ".png").replace("20110826-","");
+        $('#tr3').html('<a href="' + img_link + '" target="_blank"><img src="' + img_link + '" style"=visibility: visible"></a>');
+        $('#tr3b').html('<a href="'+binary_img_link+ '" target="_blank"><img src="'+binary_img_link + '" style"=visibility: visible"></a>');
+	if($('#vis_image').css("visibility")=='visible'){
+        	$('#vis_image img').each(function(){
+                	$(this).css("visibility",'visible');
+                });
+        }
+}
 
 //=================================TABNAVIGATION==============
 /*
@@ -326,16 +350,13 @@ function initScatter(experiments){
 		experiments = 'F29_A1';
 
         var post_url="/cgi-bin/retrieve_pca.pl";
-
-if (! document.getElementById("cb1").checked && ! document.getElementById("cb2").checked  && ! document.getElementById("cb3").checked ){
-         $('#cb1').attr('checked','true');
+	if (! document.getElementById("cb1").checked && ! document.getElementById("cb2").checked  && ! document.getElementById("cb3").checked ){
+        	$('#cb1').attr('checked','true');
                 $('#cb2').attr('checked','true');
-}
-
+	}
 	var cb1_checked = document.getElementById("cb1").checked;
         var cb2_checked = document.getElementById("cb2").checked;
         var cb3_checked = document.getElementById("cb3").checked;
-
         var c1id = "";
         var c2id = "";
         if (cb1_checked)
@@ -409,18 +430,12 @@ if (! document.getElementById("cb1").checked && ! document.getElementById("cb2")
 						var yindex = Math.floor(this.series.index/3);
                                                 var strain = $('#dtSet').val()[yindex]; //for multiple
                         console.log("20110826-" + strain + "_1"  + "_" + imgc);
+					    	if (previousSelected != ""){
+							$(previousSelected).removeClass("selected_img");
+						}	
                                             $("#20110826-" + strain + "_1"  + "_" + imgc).addClass("selected_img");
-                        			var serie = 1;
-                                                 $('#vis_image table tr').each(function(i,e){
-                                                        var img_link = strain + "/20110826-" + strain + "_" + serie + "_" + imgc + ".png";
-                                                        serie = serie + 1;
-                                                        $(e).html('<a href="'+img_link+ '" target="_blank"><img src="'+img_link + '" style"=visibility: visible"></a>');
-                                                })
-                                                if($('#vis_image').css("visibility")=='visible'){
-                                                        $('#vis_image img').each(function(){
-                                                                $(this).css("visibility",'visible');
-                                                        });
-                                                }
+						getYiiImages(strain, imgc);
+						previousSelected = "#20110826-" + strain + "_1"  + "_" + imgc;
                                                 $('#visImage').click();
                                                 var offset = 22;//this['id'] / 20;
                                                 if (this['id'] < 420) offset = 20;
@@ -561,20 +576,12 @@ function initCallbackFunction(strain){
 					,click:function(eve){
 						var imgc = this['id']+parseInt(img_min)-1;
 						var strain = $('#dtSet').val();//[] for multiple
-						//imgc = strain + "/20110826-" + strain + "_1_" + imgc;
-                        console.log("20110826-" + strain + "_1"  + "_" + imgc);
 					    $("#20110826-" + strain + "_1"  + "_" + imgc).addClass("selected_img");
-                        var serie = 1; 
-						 $('#vis_image table tr').each(function(i,e){
-							var img_link = strain + "/20110826-" + strain + "_" + serie + "_" + imgc + ".png";
-							serie = serie + 1;
-						        $(e).html('<a href="'+img_link+ '" target="_blank"><img src="'+img_link + '" style"=visibility: visible"></a>');
-                				})
-                				if($('#vis_image').css("visibility")=='visible'){
-                        				$('#vis_image img').each(function(){
-                                				$(this).css("visibility",'visible');
-                        				});
-                				}
+					    getYiiImages(strain, imgc);
+						if (previousSelected != ""){
+                                                        $(previousSelected).removeClass("selected_img");        
+                                                }
+                                                previousSelected = "#20110826-" + strain + "_1"  + "_" + imgc;
                 				$('#visImage').click();
 						var offset = 22;//this['id'] / 20;
 						if (this['id'] < 420) offset = 20;	
@@ -698,16 +705,34 @@ function carouselLoad(strain, datas){
 		var s2=s.replace("jpg","png");
 		var serie = 1;
 		$(this).click(function(){
-		$('#vis_image table tr').each(function(i,e){
-			var series_u = s2.replace(strain + "_1", strain+"_" + serie);
-			serie = serie + 1; 
-			$(e).html('<a href="' + strain + '/'+series_u+'" target="_blank"><img src="' + strain + '/'+series_u+'" style"=visibility: visible"></a>');
-		})
+		//getYiiImages(strain, imgc);
+		var series_u = s2.replace(strain + "_1", strain+"_" + serie);
+		var binary_img_link = (strain + "/binary/" + series_u + ".png").replace("20110826-","");
+		serie = serie + 1; 
+		$('#tr1').html('<a href="' + strain + '/'+series_u+'" target="_blank"><img src="' + strain + '/'+series_u+'" style"=visibility: visible"></a>');
+		$('#tr1b').html('<a href="'+binary_img_link+ '" target="_blank"><img src="'+binary_img_link + '" style"=visibility: visible"></a>');
+		serie = 2;
+		series_u = s2.replace(strain + "_1", strain+"_" + serie);
+                binary_img_link = (strain + "/binary/" + series_u + ".png").replace("20110826-","");
+                serie = serie + 1;
+                $('#tr2').html('<a href="' + strain + '/'+series_u+'" target="_blank"><img src="' + strain + '/'+series_u+'" style"=visibility: visible"></a>');
+                $('#tr2b').html('<a href="'+binary_img_link+ '" target="_blank"><img src="'+binary_img_link + '" style"=visibility: visible"></a>');
+		serie = 3;
+                series_u = s2.replace(strain + "_1", strain+"_" + serie);
+                binary_img_link = (strain + "/binary/" + series_u + ".png").replace("20110826-","");
+                serie = serie + 1;
+                $('#tr3').html('<a href="' + strain + '/'+series_u+'" target="_blank"><img src="' + strain + '/'+series_u+'" style"=visibility: visible"></a>');
+                $('#tr3b').html('<a href="'+binary_img_link+ '" target="_blank"><img src="'+binary_img_link + '" style"=visibility: visible"></a>');
 		if($('#vis_image').css("visibility")=='visible'){
 			$('#vis_image img').each(function(){
 				$(this).css("visibility",'visible');
 			});
 		}
+		$("#"+this.id).addClass("selected_img");
+		if (previousSelected != ""){
+                	$(previousSelected).removeClass("selected_img");        
+                }
+                previousSelected = "#" + this.id;
 		$('#visImage').click();
 	});//.click
 	});//each
