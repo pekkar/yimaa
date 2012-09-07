@@ -119,8 +119,8 @@ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cdeb8
 }
 #pca_cb_div{
 	position: absolute;
-	left: 400px;
-	top: 70px;
+	left: 500px;
+	top: 75px;
 }
 .pcacb {
 	display:inline;
@@ -143,9 +143,10 @@ button.pcacb  {
 }
 */
 .features {
-	position: absolute;
-	top: 0px;
-	left: 430px;
+}
+
+.dtSet {
+    margin-left: 5px;
 }
 
 .navigation{
