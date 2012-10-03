@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+	<link rel="shortcut icon" href="images/yim.png" />
 	<script src="jquery-1.7.2.js"></script>
 	<script src="jquery.galleria.min.js"></script>
 	<script src="jquery.tipsy.js"></script>
@@ -12,8 +12,9 @@
 	<script src="jquery.ui.mouse.js"></script>
 	<script src="jquery.ui.tabs.js"></script>
 	<script src="jquery.ui.slider.js"></script>
-	<script src="highcharts.src.js"></script>
-<script src="http://code.highcharts.com/modules/exporting.js"></script>
+        <script src="highcharts.src.js"></script>
+    	<script src="jquery-ui-1.8.23.custom.min.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script src="highslide-full.js"></script>
 	<script src="grid.js"></script>
 	<script src="jquery.multiselect.js"></script>
@@ -27,8 +28,6 @@
 	<link rel="stylesheet" href="slider.css">
     <link rel="stylesheet" href="jquery.multiselect.css">
     <link rel="stylesheet" type="text/css" href="jquery-humanity-css/jquery-ui-1.8.23.custom.css" />
-
-
 	<style>
 	/*body{background:rgba(173, 161, 161, 0.85);}
 */
@@ -82,9 +81,10 @@
 	<div id="main_div">
 		<div id="tab_navigation" >
             <ul class="tab_navi">
+<li><button  id="visPCA" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" > <span  class="ui-button-text">PCA</span> </button></li>
                 <li><button id="visChart" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Chart</span></button></li>
-				<li><button id="visImage" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Images</span></button></li>
-                <li><button  id="visPCA" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" > <span  class="ui-button-text">PCA</span> </button></li>
+			<!--	<li><button id="visImage" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Images</span></button></li>
+-->
 			</ul>
 		</div>
 		<div id="pca_cb_div" ></div>
@@ -94,30 +94,34 @@
 		<div id="stats1">
 		</div>
 		<div id="stats2">
-		</div>
+        </div>
+        <button type="button"  id="visPlay">Play</button>
+        <button type="button"  id="visPause">Pause</button>
+        <button type="button"  id="visStop">Clear</button>
 	</div>
-	
-	<div id="scroll">
+	<div id="image_container">
+        Gallery <span id="img_status"></span><div id="img_strain_list"></div>
+		<table>
+                        <tr><td id="yiiimage_strain"></td></tr>
+                        <tr><td id="tr1"></td><td id="tr1b"></td></tr>
+                        <tr><td id="tr2"></td><td id="tr2b"></td></tr>
+                        <tr><td id="tr3"></td><td id="tr3b"></td></tr>
+        	</table>
 	</div>
-
-		<div id="vis_image">
-			<table>
-			<tr><td id="yiiimage_strain"></td></tr>
-			<tr><td id="tr1"></td><td id="tr1b">text</td></tr>
-			<tr><td id="tr2"></td><td id="tr2b"></td></tr>
-			<tr><td id="tr3"></td><td id="tr3b"></td></tr>
-			</table>
-		</div>		
-		<div id="PCAdiv">
-		</div>
-		
+	 <div id="cmp_image_container">
+                <div id="cmp_strain"></div><br>
+                <table>
+                        <tr><td id="cmp_yiiimage_strain"></td></tr>
+                        <tr><td id="trc1"></td><td id="trc1b"></td></tr>
+                        <tr><td id="trc2"></td><td id="trc2b"></td></tr>
+                        <tr><td id="trc3"></td><td id="trc3b"></td></tr>
+                </table>
+        </div>
+	<div id="scroll"></div>
+	<div id="vis_image"></div>
+	<div id="PCAdiv"></div>		
 	</div>
 <script>
-/*
-$(document).ready( function() {
-    $("#dtSet").multiSelect();
-});
-*/
 </script>
 </body>
 </html>
