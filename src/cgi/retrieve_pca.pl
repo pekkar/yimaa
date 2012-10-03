@@ -9,7 +9,7 @@ use Cwd;
  
 my ($cgi, $ca,$cb,$experiments,$exp,@dts);
 my $atm_location=getcwd();
-my $data_folder='/home/csbgroup/public_html/fluffy/pc/';
+my $data_folder='/home/csbgroup/public_html/yimaa/PCA_new/';
 
 $cgi=CGI->new;
 
@@ -32,7 +32,7 @@ my @experiments_arr = split(/,/, $experiments);
 #my @dts = qw();
 
 foreach $exp (@experiments_arr){
-	push(@dts, grep(/${exp}\_\d\_PC\.csv$/,@data_files));
+	push(@dts, grep(/${exp}\_\d.csv$/,@data_files));
 }
 
 #my @dts=grep(/${experiments}\_\d\_PC\.csv$/,@data_files);
@@ -52,6 +52,15 @@ $cb=~tr/cb//d;
 $cb--;
 
 my $counter = 0;
+#my @colors=qw(#AA4643, #89A54E, #80699B, #3D96AE, #DB843D, #92A8CD, #A47D7C, #B5CA92);
+#blue #3E6695, #4572A7, #4F7FB6, #618CBE, #7399C5
+#RED #983E3C #AA4643 #B9514D #C06360, #C77572
+#green #7B9446 #89A54E #96B15B #A1BA6C #ACC27E
+my @colors=(
+	['#3E6695', '#4572A7', '#4F7FB6', '#618CBE', '#7399C5'],
+	['#983E3C', '#AA4643', '#B9514D', '#C06360', '#C77572'],
+	['#7B9446', '#89A54E', '#96B15B', '#A1BA6C', '#ACC27E']
+);
 foreach(@dts){
 #read PC.csv
 	open(IN, $_) or die "Can't open $_  in datas$!\n";
@@ -64,6 +73,9 @@ foreach(@dts){
 			maxv=>'0',dt=>[] #{id:'',y:''},
 		};
 	#print Dumper(\%result);
+	my $lin=1;
+	my $colour;
+	my $v;
 	while(<IN>){
 		next if /^0,/;
 		my @ar=split(/\,/);
@@ -71,7 +83,16 @@ foreach(@dts){
 		$ar[$ca]*=1;
 		$ar[$cb]=0 if $ar[$cb] =~/Nan/i;
 		$ar[$cb]*=1;
-		push(@{$result{$counter}{'dt'}},{'id'=>$cb, 'y'=>$ar[$cb], 'x'=>$ar[$ca]});
+		#max frame ~500 /10 = 5 color;	
+			#$colour=$colors[$counter][$lin];
+		$colour=$lin;
+		$colour=~/^(\d?)/;
+		if($1-1 gt 4){$v=$colors[$counter][0]} #fix null values
+		else{
+			$v=$colors[$counter][$1-1];#=$1;$v--;
+		}
+		push(@{$result{$counter}{'dt'}},{'id'=>$lin, 'y'=>$ar[$cb], 'x'=>$ar[$ca], 'fillColor'=>$v});
+		$lin++;	
 	}
 	my @tmp=sort{$a <=> $b} @{$result{$counter}{'dt'}};
 	$result{$counter}{'minv'}=shift(@tmp);
@@ -79,7 +100,6 @@ foreach(@dts){
 	close IN or die "Can't close $_ $!\n";
 	$counter = $counter + 1;
 }
-#}
 #change dt struct to [of obj]
 my @json_dt;
 while( (my ($ke, $v))=each(%result)){
@@ -88,5 +108,6 @@ while( (my ($ke, $v))=each(%result)){
 }
 print $cgi->header('application/json');
 print encode_json(\@json_dt);
+#print Dumper(\@json_dt);
 #print %result . "\n"  
 
