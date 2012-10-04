@@ -19,7 +19,7 @@
 
 
  *  The newly redrawn graph sometimes overlaps the tabs, so i can't click on them anymore (as shown in the screen shot again). This might just be a browser thingy though? I'm using Firefox on a mac
-[http://code.google.com/files/zhihao_screenshot.png]
+[http://yimaa.googlecode.com/files/zhihao_screenshot.png]
  * I have never seen this but it's a browser thing - though I use Firefox and Chrome on Mac too. You say sometimes, see if you can write down the exact steps and then try it on say Adrian's computer. 
  *  *By in your screenshot, it shows that you selected 5 strains, F29_Summary twice, my view is still to impose limit of max strain selection to be 3* jl
 
