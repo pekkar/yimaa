@@ -1,7 +1,40 @@
+#labels Phase-Requirements,Phase-QA
 = Yeast Image Analysis =
 
 
 == Issues ==
+
+04.10.2012
+
+ *  In the PCA view, the colors of the plots are a little confusing... e.g. when I mouse over the red series, the amplified bubble is blue, so I'm not sure which series I'm looking at (as shown in screen shot). Also, could the labels be the strain names instead of "series x"? In this case I don't actually know which strain summary the series is...
+ We will fix the colors and update the labels accordingly.
+
+ *  The newly redrawn graph sometimes overlaps the tabs, so i can't click on them anymore (as shown in the screen shot again). This might just be a browser thingy though? I'm using Firefox on a mac
+I have never seen this but it's a browser thing - though I use Firefox and Chrome on Mac too. You say sometimes, see if you can write down the exact steps and then try it on say Adrian's computer. 
+
+ *  In the PCA view: Is there a plan to tackle the scrollbar at the bottom? e.g. right now when I pick the series of a F45 strain the scroll bar still shows a F29 strain. I'm not sure if you've decided what to display in the scroll bar if multiple strains are chosen?
+When multiple strains are chosen, we will not show the scroll bar. When there is only one strain selection, we will update the scroll bar accordingly. 
+
+ *  In the chart view: the charts don't update when a different strain is selected, they only update when a different feature is selected. The scroll bar sometimes updates when a different strain is selected only when I click on it, other times it automatically changes?
+We will fix this.
+ 
+ * As for the change points, here are some windows in my view:
+ * F29_A1: 260-300
+ * F29_A2: 260-290
+ * F29_A3: 270-310
+ * F29_B1: 150-180
+ * F29_C1: 180-210
+
+ * The F45s are a little difficult to call fluffy/non-fluffy because once they get big enough to see properly they're pretty much fluffy already? So this might be more a size thing than anything else?
+ * F45_A2: 140-160
+ * F45_A3: can't call
+ * F45_D2: 140-160
+
+ 
+ * No thumbnails for YAD145? But it shouldn't be called fluffy
+
+ * No thumbnails for YO779 either?
+
 
  * ~~Sort feature drop down to alphabetic order and fix the first letter to be uniform among features. ~~  
  => All are lowercase now
