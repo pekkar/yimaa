@@ -11,7 +11,7 @@
 
 == Issues ==
 
-04.10.2012
+===04.10.2012===
 
  *  In the PCA view, the colors of the plots are a little confusing... e.g. when I mouse over the red series, the amplified bubble is blue, so I'm not sure which series I'm looking at (as shown in screen shot). Also, could the labels be the strain names instead of "series x"? In this case I don't actually know which strain summary the series is...
  We will fix the colors and update the labels accordingly.
@@ -46,6 +46,8 @@ We will fix this.
  * No thumbnails for YO779 either?
  * *Will update image and thumbnail data and upload to GAE* jl
 
+
+===15.08.2012===
 
  * ~~Sort feature drop down to alphabetic order and fix the first letter to be uniform among features. ~~  
  => All are lowercase now
