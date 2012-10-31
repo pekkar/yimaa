@@ -2,31 +2,31 @@
 <html>
 <head>
 	<link rel="shortcut icon" href="images/yim.png" />
-	<script src="jquery-1.7.2.js"></script>
-	<script src="jquery.galleria.min.js"></script>
-	<script src="jquery.tipsy.js"></script>
-	<script src="jquery.mousewheel.js"></script>
-	<script src="jquery.jcarousel.js"></script>
-	<script src="jquery.ui.core.js"></script>
-	<script src="jquery.ui.widget.js"></script>
-	<script src="jquery.ui.mouse.js"></script>
-	<script src="jquery.ui.tabs.js"></script>
-	<script src="jquery.ui.slider.js"></script>
-        <script src="highcharts.src.js"></script>
-    	<script src="jquery-ui-1.8.23.custom.min.js"></script>
+	<script src="lib/jquery-1.7.2.js"></script>
+	<script src="lib/jquery.galleria.min.js"></script>
+	<script src="lib/jquery.tipsy.js"></script>
+	<script src="lib/jquery.mousewheel.js"></script>
+	<script src="lib/jquery.jcarousel.js"></script>
+	<script src="lib/jquery.ui.core.js"></script>
+	<script src="lib/jquery.ui.widget.js"></script>
+	<script src="lib/jquery.ui.mouse.js"></script>
+	<script src="lib/jquery.ui.tabs.js"></script>
+	<script src="lib/jquery.ui.slider.js"></script>
+        <script src="lib/highcharts.src.js"></script>
+    	<script src="lib/jquery-ui-1.8.23.custom.min.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
-	<script src="highslide-full.js"></script>
+	<script src="lib/highslide-full.js"></script>
 	<script src="grid.js"></script>
-	<script src="jquery.multiselect.js"></script>
+	<script src="lib/jquery.multiselect.js"></script>
 	<script src="hiiva.js"></script>
-	<link rel="stylesheet" href="tipsy.css">
-	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="jsor_skin.css">
-	<link rel="stylesheet" href="jquery.ui.all.css">
-	<link rel="stylesheet" href="jquery.ui.tabs.css">
-	<link rel="stylesheet" href="highslide.css">
-	<link rel="stylesheet" href="slider.css">
-    <link rel="stylesheet" href="jquery.multiselect.css">
+	<link rel="stylesheet" href="css/tipsy.css">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/jsor_skin.css">
+	<link rel="stylesheet" href="css/jquery.ui.all.css">
+	<link rel="stylesheet" href="css/jquery.ui.tabs.css">
+	<link rel="stylesheet" href="css/highslide.css">
+	<link rel="stylesheet" href="css/slider.css">
+    <link rel="stylesheet" href="css/jquery.multiselect.css">
     <link rel="stylesheet" type="text/css" href="jquery-humanity-css/jquery-ui-1.8.23.custom.css" />
 	<style>
 	/*body{background:rgba(173, 161, 161, 0.85);}
@@ -82,7 +82,7 @@
 		<div id="tab_navigation" >
             <ul class="tab_navi">
 <li><button  id="visPCA" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" > <span  class="ui-button-text">PCA</span> </button></li>
-                <li><button id="visChart" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Chart</span></button></li>
+                <li><button id="visChart" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Features</span></button></li>
 			<!--	<li><button id="visImage" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" ><span class="ui-button-text">Images</span></button></li>
 -->
 			</ul>
@@ -99,6 +99,7 @@
         <button type="button"  id="visPause">Pause</button>
         <button type="button"  id="visStop">Clear</button>
 	</div>
+	<!-- image_container -->
 	<div id="image_container">
         Gallery <span id="img_status"></span><div id="img_strain_list"></div>
 		<table>
