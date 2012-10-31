@@ -8,7 +8,7 @@ use Cwd;
 my $cgi=CGI->new;
 #retrieve parameter from argument and build folder path
 my $experiment=$cgi->param('exp');
-my $folder='/home/csbgroup/public_html/fluffy/' . $experiment . '/icons';
+my $folder='/home/csbgroup/public_html/yimaa/' . $experiment . '/icons';
 #'/home/csbgroup/public_html/fluffy/20110826-F29_A1/icons';
 chdir $folder or die "Can't go to $folder";
 $folder=getcwd();
