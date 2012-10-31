@@ -21,6 +21,7 @@
 	max-height:600px;
 	max-width:600px;
 	padding-left:20px;
+	margin-left: 90px;
 }
 .tab_navi li {
 	margin-left:8px;
@@ -73,6 +74,16 @@ p.span_carousel{
 	line-height:96px;
 */
 }
+.span_carousel2 span{
+	float: left;
+	text-align:center;
+	margin-top: 55px;
+	position:relative;
+	z-index:5;
+	font-size:9px;
+	width:75px;
+	font-color:black;
+}
 .dtls_span {
 	display:block;
 }
@@ -97,7 +108,7 @@ body {
 	margin:0px;
 }
 #header{
-	background-image:url('banneri2.jpg');
+	background-image:url('../images/banneri2.jpg');
 	background-size: 700px 45px;
 	
 /*
@@ -239,7 +250,7 @@ div .ui-slider{
 	/*
 	padding-left:100px;	
 	*/
-	margin-top:70px;
+	margin-top:75px;
 	position: absolute;
 	float:left;
 }
@@ -247,63 +258,74 @@ div .ui-slider{
 	margin-left:50px;
 }
 
+#image_container{
+        position:absolute;
+        margin-left:800px;
+        float:left;
+        margin-top:50px;
+        width:420px;
+        overflow: auto;
+        height:600px;
+        border: 1px solid blue;
+        background: white;
+        padding-left: 10px;
+        border-radius:10px;
+}
+
+#cmp_image_container{
+        position:absolute;
+        margin-left:1250px;
+        float:left;
+        margin-top:50px;
+        width:420px;
+        overflow: auto;
+        height:600px;
+        border: 1px solid blue;
+        background: white;
+        padding-left: 10px;
+        border-radius:10px;
+}
+
 #stats{
 	position:absolute;
-	margin-left:780px;
+	margin-left:40px;
 	float:left;
-/*
-	margin-top:160px;
-
-	padding-top:30px;
-*/
-	margin-top:50px;
-	width:270px;
-	height:400px;
-	border: 1px solid black;
-	background: #D4D0C8; 
-	padding-left: 10px;
-	border-radius:10px;
-	/*
-	float:left;
-	*/
+	margin-top:480px;
+	width:740px;
+        overflow: auto;
+	height:80px;
+	/*border: .5px solid red;*/
+	/*background: cornflowerblue;*/ 
+	padding-left: 2px;
+	/*border-radius:2px;*/
 }
-#stats2 {
-/*
-	margin-top:-200px;
-*/
-}
-
-.stats_list{
-/*
- 	float:left;
-	*
-	padding-left:10px;
-	*/
+#stats p {
 	margin-top:0px;
-/*	width:200px;
-	height:500px;
-*/
+}
+.stats_list{
+	margin-top:0px;
 	list-style-type:none;
 	font-size:16px;
 }
 
 ul li.listing{
-/*	color:black;
-*/
 	color:black;
 	padding-top:.2emm
 }
 
 #scroll{
 	position:absolute;
-	margin-top: 480px;
+	margin-top: 550px;
 	padding-bottom: 20px;
 }
 
 .selected_img{
-    outline: 5px solid red;
+    outline: 3px solid red;
 }
 .tooltip:hover:after { 
 	content: attr(data-tooltip); 
 }
-
+tbody tr td a img {
+	max-height:250px;
+	max-width:250px;
+}
