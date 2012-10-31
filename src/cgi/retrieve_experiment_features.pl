@@ -10,8 +10,9 @@ use Cwd;
 #use v5.10;
 my ($cgi, $feature, $folder);
 my $atm_location=getcwd();
-my $header_file="/home/csbgroup/public_html/fluffy/header.json";
-my $data_folder='/home/csbgroup/public_html/fluffy/pc/';
+my $header_file="/home/csbgroup/public_html/yimaa/data/header.json";
+#my $data_folder='/home/csbgroup/public_html/yimaa/PCA/';
+my $data_folder='/home/csbgroup/public_html/yimaa/data/feature_val';
 
 $cgi=CGI->new;
 $feature=$cgi->param('feature');
@@ -48,6 +49,8 @@ foreach(@dts){
 	open(IN, $_) or die "Can't open $_ $!\n";
 	$_=~s/\.csv//g;
 	my $k=$_;
+	my $strn=$_;
+	$strn=~s/^\d{8}-//g;
 	$k=$1 if($_=~/\_(\d)$/);
 	$result{$k}={
 			minv=>'0',
@@ -60,8 +63,8 @@ foreach(@dts){
 		my @ar=split(/\,/);
 		$ar[$i]=0 if $ar[$i] =~/Nan/i;
 		$ar[$i]*=1;
-	#	push(@{$result{$k}{'dt'}},$ar[$i]);
-		push(@{$result{$k}{'dt'}},{'id'=>$lin, 'y'=>$ar[$i], 'x'=>$lin});
+	#	push(@{$result{$k}{'dt'}},{'id'=>$lin, 'y'=>$ar[$i], 'x'=>$lin});
+		push(@{$result{$k}{'dt'}},{'id'=>$lin, 'y'=>$ar[$i], 'x'=>$lin, 'strain'=>$strn});
 		$lin++;
 	}
 #print @{$result{$k}{'dt'}};
@@ -72,9 +75,9 @@ foreach(@dts){
 }
 #change dt struct to [of obj]
 my @json_dt;
-while( (my ($ke, $v))=each(%result)){
-#	print Dumper(\$v);
-	push(@json_dt, $v);
+#while( (my ($ke, $v))=each(%result)){
+foreach my $kkey(sort(keys %result)){
+	push(@json_dt, $result{$kkey});
 }
 
 print OUT localtime() . "\n";

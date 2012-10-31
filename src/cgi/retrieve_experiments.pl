@@ -6,7 +6,7 @@ use JSON;
 use Cwd;
 use Data::Dumper;
 
-my $folder='/home/csbgroup/public_html/fluffy/pc';
+my $folder='/home/csbgroup/public_html/yimaa/PCA';
 chdir $folder or die "Can't go to $folder";
 $folder=getcwd();
 opendir(my $folder_content, $folder) or die 'Cant open $folder';
