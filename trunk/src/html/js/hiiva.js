@@ -45,13 +45,17 @@ $("#timelag").multiselect({
     }*/
 });
 
-//var yimaa_mode = 'chart';
+$('#stats').append('<p><select id="strainDropDown"></select></p>');
 var yimaa_mode='PCA';
 var previousSelected = "";
 var pca_experiments = [];
 var chart_experiments = [];
 var dtSetStr = "";
 var dtSetStrPCA = "";
+var sliderIMin = 0;
+var sliderIMax = 0;
+var currentTimeseries = 0;
+var selectedTimepoint = 0;
 
 hs.addSlideshow({
 	repeat:false,
@@ -75,10 +79,19 @@ hs.maxWidth=200;
 var retrieve_exp_url='/cgi-bin/retrieve_experiment_series.pl';
 var post_url="/cgi-bin/retrieve_experiment_features.pl";
 
-$.getJSON('header_lowercase.json',function(datas){
+$('#strainDropDown').change(function(){
+	var selectedStrand=$(this).val();
+	$.getJSON(retrieve_exp_url, {exp:selectedStrand}, function(exp_icons){
+	carouselLoad(selectedStrand, exp_icons);
+});
+
+
+});
+
+//get feature headers
+$.getJSON('data/header_lowercase.json',function(datas){
 	$('#tab_navigation').append('<select id="features" <span title="Image Classification Features - See Info Features for more Info" class="tooltip"></span> ');
 	$('#tab_navigation').append('<select id="dtSet" title="Natural Variation Experiments" multiple="multiple">');
-	//$('#dtSet').label("Strain");
 	var i;
 	for(i=0;i<datas.length;i+=1){
 		$('#tab_navigation > #features').append(function(d){
@@ -92,32 +105,18 @@ $.getJSON('header_lowercase.json',function(datas){
 	selectedList: 1,
         multiple: false,
 	classes: 'features', 
-        click: uploadNewData
+        click: uploadNewFeature
     });
 });
 
 $('#stats1').append(
-	//'Feature <span id="selected_feature"></span>'+
         '<span>Timeframe: <input type="text" id="frame_span"></input> Image: <input type="text" id="image_span"></input></span>'+
         '<span id="series0">Series1:</span> '+
         '<span id="series1">Series2:</span> '+
         '<span id="series2">Series3:</span> '+
-//'<br>Average: <span class="dtls_span" id="average"></span>'+
 	'Min: <span id="min"></span> '+'Mean: <span id="mean"></span> '+ 'Max: <span id="max"></span>' 
-	//'<br>'+
-	//'Image: <input type="text" id="image_span"></input><span id="img_span"><span>'+
-	
 );
 
-
-//$('#stats2').append('<ul>');
-/*$('#stats2').append('<p>'+
-	'<span class="dtls_span" >Time frame: <input type="text" id="frame_span"></input></span>'+
-	'<span class="dtls_span" id="series0">Series1 value:</span>'+
-	'<span class="dtls_span" id="series1">Series2 value:</span>'+
-	'<span class="dtls_span" id="series2">Series3 value:</span>'+
-	'</p>'
-);*/
 $('#scroll').append('<div class="scroll-pane" id="spaneid">');
 $('.scroll-pane').append('<div class="scroll-content" id="scontentid">');
 $('.scroll-pane').append('<div class="scroll-bar-wrap ui-widget-content ui-corner-bottom">'+
@@ -154,8 +153,6 @@ $('#image_span').keydown(function(){
 		var jmp_txt=$('#image_span').val();	
 		jmp_txt=jmp_txt-img_min+1;
 		if(jmp_txt>max_value){
-			//jump2max
-			console.log(max_value);
 			scrollbar.slider('option','value',max_value);	
 		}
 		else if(jmp_txt<=0) {
@@ -167,10 +164,15 @@ $('#image_span').keydown(function(){
 	};
 });
 
-function getYiiImages(strain, imgc){
+function getYiiImages(strain, imgc, callback){
+	
 	var div = "#tr";
         var serie = 1;
-        var img_link = strain + "/" + strain + "_" + serie + "_" + imgc + ".png";
+	//for summary strains, display A2 since that is the only replicate consistent in all 4 experiments
+        if (strain.indexOf("_Summary") != -1){
+		strain = strain.replace("_Summary", "_A2")
+	}
+	var img_link = strain + "/" + strain + "_" + serie + "_" + imgc + ".png";
         var binary_img_link = (strain + "/binary/" + strain + "_" + serie + "_" + imgc + ".png").replace("20110826-","");
         serie = serie + 1;
         $(div + '1').html('<a href="' + img_link + '" target="_blank"><img src="' + img_link + '" style"=visibility: visible"></a>');
@@ -189,6 +191,7 @@ function getYiiImages(strain, imgc){
                         $(this).css("visibility",'visible');
                 });
         }
+	$('#img_status').html(strain +  ' timeseries ' + imgc);
         $('#img_strain_list').html(
                 '<span title="Comp Strain List" class="tooltip">' + strain +  ' vs </span>' + getCmpStrainList());
         $("#cmp_strain_list").multiselect({
@@ -203,6 +206,8 @@ function getYiiImages(strain, imgc){
                 loadCmpImages("#trc", strain, imgc);
         }
         });
+	if (callback != null)
+		callback();
 }
 
 function loadCmpImages(div, strain, imgc){
@@ -230,24 +235,6 @@ function loadCmpImages(div, strain, imgc){
 
 
 //=================================TABNAVIGATION==============
-/*
-$('#main_div').prepend('<div id="tab_navigation">'
-+'<ul class="tab_navi">'
-+'<li><a href="#vis_chart" id="visChart">Chart</a></li>'
-+'<li><a href="#vis_image" id="visImage">Images</aplot1'+'</u>'
-);
-//in. html
-//$('.tab_navi').tabs();
-//$('#visImage').click(function(){
-//	console.log(this);
-//$('#main_div div').each(function(){
-//		if($(this).attr("id") !== 'tab_navigation'){
-/*		$(this).remove(); //css("visibility","hidden");
-		}	
-	});
-
-//});
-*/
 $('#vis_image').css("visibility","hidden");
 $('#vis_image').addClass("plot");
 $('#PCAdiv').addClass("plot");
@@ -262,13 +249,6 @@ $('#pca_cb_div').append(
 );
 
 $('input:checkbox').change(function(){
-	/*var maxSelected='2';
-	var nowSelected=$('input:checked').size();
-	if(nowSelected > maxSelected){
-		this.checked=false;
-	}else if (nowSelected == 2){
-		initScatter();
-	}*/
         var cb1_checked = document.getElementById("cb1").checked;
         var cb2_checked = document.getElementById("cb2").checked;
         var cb3_checked = document.getElementById("cb3").checked;
@@ -282,30 +262,8 @@ $('input:checkbox').change(function(){
         }		
 });
 
-/*$('#pca_cb_div').append(
-	'<button class="pcacb" >Update</button>'
-);
-*/
-
-//$('button.ui-multiselect').click(initScatter);
-	
-//================DIVS====================================
-/*
-$('#visImage').click(function(){
-	//$('#plot1').css("display","none");
-	//$('#PCAdiv').css("display","none");
-	
-        $('.dd').each(function(ind,ele){
-		$(ele).css("display","none");
-	})
-	$('#vis_image img').each(function(i,e){
-		$(e).css("visibility","visible");
-	});
-	$('#vis_image').css("display","inline");
-	$('.pcacb').css("display","none");
-});
-*/
 function interactImage(){
+console.log($('.dd'));
 	$('.dd').each(function(ind,ele){
                 $(ele).css("display","none");
         })
@@ -316,9 +274,21 @@ function interactImage(){
         $('.pcacb').css("display","none");
 }
 
-
 $('#visChart').click(function(){
-   $('#dtSet').html(dtSetStr);
+    $('.scroll-bar').slider('value', 0);
+    if( $('#dtSet').val() !== null){
+        if($('#dtSet').val() != undefined && $('#dtSet').val()[0].indexOf('Summary') === -1){
+            dtSetStr = dtSetStr.replace('selected="selected"', '');
+            dtSetStr = dtSetStr.replace('value="'+$('#dtSet').val()[0]+'"', 'value="'+$('#dtSet').val()[0]+'" selected="selected"');
+        }
+        else{
+            dtSetStr = dtSetStr.replace('selected="selected"', '');
+            dtSetStr = dtSetStr.replace('value="F29_A3"', 'value="F29_A3" selected="selected"');
+
+        }
+    }
+    $('#dtSet').html(dtSetStr);
+    uploadNewFeature();
     scatterAnimationStop();
     scatter_paused = true;
     $('#visPause').css("display", "none");
@@ -340,18 +310,20 @@ $('#visChart').click(function(){
         clearInterval(interval_id);
         $("#dtSet").multiselect("uncheckAll");}
     });
-    $("#dtSet").multiselect('option', {multiple: false, open: function(event, ui){
-        $("#dtSet").multiselect("uncheckAll");}
-    });
-	yimaa_mode='chart';
+    yimaa_mode='chart';
+$('#stats p').css('display','none');
 });
 
 $('#PCAdiv').css("display","none");
 $('#pca_cb_div').css("display","none");
 
 $('#visPCA').click(function(){
-     //$('#dtSet').html(dtSetStrPCA);
-	$('#dtSet').html(dtSetStrPCA);
+    $('.scroll-bar').slider('value', 0);
+    if( $('#dtSet').val() !== null){
+        dtSetStrPCA = dtSetStrPCA.replace('selected="selected"', '');
+        dtSetStrPCA = dtSetStrPCA.replace('value="'+$('#dtSet').val()+'"', 'value="'+$('#dtSet').val()+'" selected="selected"');
+    }
+    $('#dtSet').html(dtSetStrPCA);
     $('#visPause').css("display", "inline");
     $('#visPlay').css("display", "inline");
     $('#visStop').css("display", "inline");
@@ -364,12 +336,11 @@ $('#visPCA').click(function(){
 	$('.pcacb').css("display","inline");
 	$('button.pcacb').css("display","inline");
 	yimaa_mode = 'PCA';
-
     $("#dtSet").multiselect('option', {multiple: true, open: function(event, ui){clearInterval(interval_id);}});
     $('.timelag').css('display', '');
     $('#dataDiv').css('display', 'inline');
-
-	initScatter();
+	($('#dtSet').val() === null) ? initScatter() : initScatter($('#dtSet').val().toString());
+	$('#stats p').css('display','block');
 });
 
 var scatter_paused = false;
@@ -411,7 +382,6 @@ function getCmpStrainList(){
 }
 
 //========================END==========================================
-var carouselItems;
 var hchart;
 var sChart;
 var hoptions;
@@ -423,12 +393,13 @@ var pcaSummary = '<option value="F29_Summary">'+"F29_Summary"+'</option>'
 		+ '<option value="YO779_Summary">'+"YO779_Summary"+'</option>';
 var strain = $('#dtSet').val();
 if (strain === undefined || strain === ""){
-	strain = "F29_A1";
+	strain = "F29_A3";
 }
 
+/*
+ * update retrieve_exp_url to return one replicate set, right now it's return exp_icons of all the files
+ */
 $.getJSON(retrieve_exp_url, {exp:strain}, function(exp_icons){
-//$.getJSON(imagepl, function(datas){
-	carouselItems=exp_icons;
 	initCallbackFunction(strain);
 	carouselLoad(strain, exp_icons);
 });
@@ -436,7 +407,7 @@ $.getJSON(retrieve_exp_url, {exp:strain}, function(exp_icons){
 $.getJSON('/cgi-bin/retrieve_experiments.pl', function(datas){
 	for(var l=0;l<datas.length;l++){
                 $('#dtSet').append(function(d){
-                        if (l === 0) {
+                        if (datas[l].indexOf("F29_A3") !== -1){//) === 0) {
                                 dtSetStr = dtSetStr + '<option value="'+datas[l]+ '" selected="selected">'+datas[l]+'</option>';                          
                                 return '<option value="'+datas[l]+'" selected="selected">'+datas[l]+'</option>';
                         }
@@ -446,57 +417,81 @@ $.getJSON('/cgi-bin/retrieve_experiments.pl', function(datas){
         }
         dtSetStrPCA = dtSetStr + pcaSummary;
 	$('#dtSet').html(dtSetStrPCA);
-	//$('#dtSet').html(dtSetStr);  
   $("#dtSet").multiselect({
         noneSelectedText: 'Dataset',
-        minWidth: '140',
+        minWidth: '200',
 	    selectedList: 3,
         header: false,
         multiple: true,
         classes: "dtSet",
         click: function(event, ui){
-        	var strain = ui.value;
-		var currentSelections = $('#dtSet').multiselect('getChecked');
+        	strain = ui.value;
+		var val_arr = $('#dtSet').multiselect('getChecked');
 		if (yimaa_mode === 'chart'){
-        	//var retrieve_exp_url='/cgi-bin/retrieve_exp.pl';       
 			$.getJSON(retrieve_exp_url, {exp:strain}, function(datas){
-        			carouselItems=datas;
-        			//initCallbackFunction();
         			carouselLoad(strain, datas);
-				uploadNewData();
+				uploadNewFeature();
 			});			
         	}
 		if (yimaa_mode === 'PCA'){
-			if (currentSelections.length == 0){
-				//alert("empty - do nothing");
+			if (val_arr.length == 0)
 				return;
+			var exp = '';
+		$('option','#strainDropDown').remove();
+		val_arr.each(function(i,v){
+			$('#stats #strainDropDown').append('<option value="'+v.value+'">'+v.value+'</option');
+		});
+			if (val_arr.length === 1){
+//console.log(strain+ ' '+$('#strainDropDown').val());
+				if(strain === $('#strainDropDown').val()){
+					strain=$('#strainDropDown').val();
+			   		$.getJSON(retrieve_exp_url, {exp:strain}, function(datas){
+                                		carouselLoad(strain, datas);
+			   		});
+				}	
+			$('.scroll-bar').slider('value', 0);
+				for (var i = 0; i < val_arr.length; i++){
+					exp = exp + val_arr[i].value + ',';
+				}
+        			scatterAnimationStop();
+        			$('#timelag').val(0);
+        			$('#timelag').multiselect("refresh");
+				initScatter(exp.substring(0,exp.length-1));
+			
+			}else{
+                                for (var i = 0; i < val_arr.length; i++){
+                                        exp = exp + val_arr[i].value + ',';
+                                }
+                                scatterAnimationStop();
+                                $('#timelag').val(0);
+                                $('#timelag').multiselect("refresh");
+                                initScatter(exp.substring(0,exp.length-1));
 			}
-			var val_arr = currentSelections; //$('#dtSet').multiselect('getChecked');
-			var strain = '';
-			for (var i = 0; i < val_arr.length; i++){
-				strain = strain + val_arr[i].value + ',';
-			}
-        	scatterAnimationStop();
-        	$('#timelag').val(0);
-        	$('#timelag').multiselect("refresh");
-			initScatter(strain.substring(0,strain.length-1));
+						
 		}
         },
         open: function(event, ui){
             $("#dtSet").multiselect("uncheckAll");
+		$('option','#strainDropDown').remove();
+		var valarr = $('#dtSet').multiselect('getChecked');
+		valarr.each(function(i,v){
+			$('#stats #strainDropDown').append('<option value="'+v.value+'">'+v.value+'</option');
+		});
+	
         }
-    
     });
 });
 
 var scatterData;
 function initScatter(experiments){	
-	//experiments = 'F29_A1';
-	if (experiments === undefined)
-		experiments = 'F29_A1';
+	if (experiments === undefined){
+		experiments = 'F29_A3';
+		//document.getElementById("strainDropDown").value = experiments;
+	}
+	if ($('#strainDropDown').val() == undefined){
+		$('#stats #strainDropDown').append('<option value="'+'F29_A3'+'">'+'F29_A3'+'</option');
+	}
         experiments = experiments.replace(/20110826-/g, "");
-
-	//var post_url="/cgi-bin/retrieve_pca.pl";
 	if (! document.getElementById("cb1").checked && ! document.getElementById("cb2").checked  && ! document.getElementById("cb3").checked ){
         	$('#cb1').attr('checked','true');
                 $('#cb2').attr('checked','true');
@@ -533,21 +528,29 @@ function initScatter(experiments){
 		title:{	
 			text:experiments
 		},
+		yAxis:{
+			title:{text:'Principled Component Analysis'},
+			labels: {
+				align:'left',
+				x:5,y:0
+ 			}
+		},
 		xAxis:{
 			stratOnTick: true,
 			endOnTick:true
 		},
+		legend:{
+			borderWidth:0,
+		},
 		tooltip: {
                 	formatter: function() {
-                        	return 'Frame: ' + this.point.id + ' X:'+
+                        	return this.point.strain.split(".")[0] +  '-Frame: ' + this.point.id + ' X:'+
                         	this.x +', Y:'+ this.y;
                 	}
             	},
 		plotOptions:{
 			scatter:{
-				marker:{
-					radius:'1'
-				},
+				marker:{radius:'1'},
 				states:{
 					hover: {
 						marker: {
@@ -571,36 +574,31 @@ function initScatter(experiments){
 						for(j=0;j<scatterData.length;j++){	
 							for(i=0;i<scatterData[j]['dt'].length;i++){
 								if(scatterData[j]['dt'][i]['id']===this.id){
-									$('#series'+j).text("Series"+(j+1)+": "+scatterData[j]['dt'][i]['y']);
+									$('#series'+j).text("Replicate"+(j+1)+": "+scatterData[j]['dt'][i]['y']);
 									pointsScatter.push(scatterData[j]['dt'][i])
 								}
 							}
 						}		
-					},//MOEOF
+					},//MOEOF Scatter
 					click: function(eve){
 						//add code to see which series was selected to figured out the right strain being []
 						var imgc = this['id'];
+						currentTimeseries = imgc;
 						var yindex = Math.floor(this.series.index/3);
                                                 var strain = $('#dtSet').val()[yindex]; //for multiple
-					    	if (previousSelected != ""){
+						getYiiImages(strain, imgc, function(){
+					    	if (previousSelected !== ""){
 							$(previousSelected).removeClass("selected_img");
-						}	
-                                            $("#" + strain + "_1"  + "_" + imgc).addClass("selected_img");
-						getYiiImages(strain, imgc);
-						previousSelected = "#" + strain + "_1"  + "_" + imgc;
-                                                interactImage();//$('#visImage').click();
-                                                var offset = 22;//this['id'] / 20;
-                                                if (this['id'] < 420) offset = 20;
-                                                if (this['id'] < 320) offset = 17;
-                                                if (this['id'] < 250) offset = 15;
-                                                if (this['id'] < 200) offset = 14;
-                                                if (this['id'] < 150) offset = 12;
-                                                if (this['id'] < 100) offset = 10;
-                                                if (this['id'] < 70)  offset = 7;
-                                                if (this['id'] < 40)  offset = 3;
-                                                var yframe = this['id'] - offset;
-                                                $('.scroll-bar').slider('value', yframe);
-					}
+						}
+					        //$(".scroll-content #" + strain + "_1"  + "_" + imgc);						              						
+					        $(".scroll-content #" + strain + "_1_" + imgc).addClass("selected_img");
+						previousSelected = "#" + strain + "_1_" + imgc;
+						selectedTimepoint = imgc;
+						$('.scroll-bar').slider('value', imgc-(img_min));
+						$(".scroll-content #" + strain + "_1_" + imgc).addClass("selected_img");
+						console.log("Callback added strain " + strain + " css class to " + imgc + " min " + img_min);
+						});
+					   }
 					}
 				}
 			}
@@ -611,31 +609,36 @@ function initScatter(experiments){
 		var j;
 		scatterData=dts;
 		for(j=0;j<dts.length;j++){
-		sOptions.series.push({	data:[dts[j]['dt'][0]]});
-				//sOptions.series[j].name=j+1;
-				//sOptions.series[j].data=dts[j]['dt'];	
-			}
+		sOptions.series.push({data:[dts[j]['dt'][0]],name:dts[j]['maxv']['strain']});
+		}
+
 	    sChart = new Highcharts.Chart(sOptions);
 	});
 };
 
-function uploadNewData(){
+function uploadNewFeature(){
 	if($('#PCAdiv').css("display")==='inline'){
 		initScatter(null);
 		return;
 	}
-	//var t=$('#features option:selected ')[0].value;
-	var featureSelected = arguments[1].text;
+	var featureSelected = $('#features').val();
+	if (featureSelected === null){
+		featureSelected = 'area';
+	}
+	if (arguments[1] !== undefined){
+		featureSelected = arguments[1].text;
+    }
+	//$('#features option:selected')[0].value;//arguments[1].text;
 	var t2 = $('#dtSet option:selected')[0].value;
-		//var post_url="/cgi-bin/fluffy_features.pl";
 		var minval,maxval;
 		minval=10000;maxval=0;
 		$.get(post_url,{feature:featureSelected, folder:t2},function(dts){
 			var j;
 			for(j=0;j<dts.length;j++){
-				//no .setData(,false);
-				hoptions.series[j].name=j+1;
+				//hoptions.series[j].name=j+1;
+				hoptions.series[j].name=dts[j]['maxv']['strain'];	
 				hoptions.series[j].data=dts[j]['dt'];	
+				
 				if(dts[j]['minv']['y']<minval) minval=dts[j]['minv']['y'];
 				if(dts[j]['maxv']['y']>maxval) maxval=dts[j]['maxv']['y'];
 			}
@@ -645,45 +648,43 @@ function uploadNewData(){
 		hchart=new Highcharts.Chart(hoptions);
 		});
 	}
-
+function initializeSlider(dataIndex ,dataID){
+	var spanText=dataID.substring(0, dataID.length-4);
+	return '<div id="' + dataIndex + '" width="75px" height="75px" >'
+	+'<p class="span_carousel2"><span>'+spanText+'</span></p>'
+	+'</div>';
+};
 function initCallbackFunction(strain){
 	console.log("init exp " + strain);
 	$('#features option[value="area"]').attr('selected','selected');
 	$('#dtSet').val(strain);
 	$('#dtSet option[value="' + strain + '"]').attr('selected','selected');
-	var t=$('#features option:selected ')[0].value;
-	if (t == null)
+	var t= $('#features').val();//$('#features option:selected ')[0].value;
+	if (t === null)
 		t = "area";
 	$('#selected_feature').text(t);
 	if(hchart) hchart.showLoading('Loading...');
-		//var post_url="/cgi-bin/fluffy_features.pl";
 		var j,minval,maxval;
-		console.log("Initial getting " + t + " time " + new Date());
+		//console.log("Initial getting " + t + " time " + new Date());
 		$.get(post_url,{feature:t, folder:strain},function(dts){
-		console.log("Returned from GET " + t + " time " + new Date());
-		//hchart=new Highcharts.Chart({
+		//console.log("Returned from GET " + t + " time " + new Date());
 	hoptions={
 		chart: {
 			renderTo:'plot1',
 			type:'spline',
 			borderColor:''
-		},title: {text:t,
-			align:'right',
-			style:{
-				color:'black',
-				fontWeight:'bold'
-			}},
+		},
+		title:{
+			text:"Feature:"+t
+		},
 		xAxis:{
 			margin:[10,10,10,10],
 			min:0
 			//max:500
-		},yAxis:{	title:''},
+		},
+		yAxis:{title:''},
 		legend:{
-			align: 'left',
-			floating: true,
-			verticalAlign: 'top',
 			borderWidth:0,
-			x:20
 		},plotOptions:{
 			spline:{
 				lineWidth:1,
@@ -711,39 +712,35 @@ function initCallbackFunction(strain){
 						for(j=0;j<dts.length;j++){	
 							for(i=0;i<dts[j]['dt'].length;i++){
 							if(dts[j]['dt'][i]['id']===this.id){
-							$('#series'+j).text("Series"+(j+1)+": "+dts[j]['dt'][i]['y']);
-							points.push(dts[j]['dt'][i])
+								$('#series'+j).text("Replicate"+(j+1)+": "+dts[j]['dt'][i]['y']);
+								points.push(dts[j]['dt'][i])
+								}
 							}
-						}
-				if(dts[j]['minv']['y']<minval) minval=dts[j]['minv']['y'];
-				if(dts[j]['maxv']['y']>maxval) maxval=dts[j]['maxv']['y'];
+							if(dts[j]['minv']['y']<minval) minval=dts[j]['minv']['y'];
+							if(dts[j]['maxv']['y']>maxval) maxval=dts[j]['maxv']['y'];
 						}//end for		
-			$('#min').text(minval);
-				$('#max').text(maxval);
+						$('#min').text(minval);
+						$('#max').text(maxval);
 					}//MOEOF
 					,click:function(eve){
 						var imgc = this['id']+parseInt(img_min)-1;
+						currentTimeseries = imgc;
 						var strain = $('#dtSet').val();//[] for multiple
-					    $("#" + strain + "_1"  + "_" + imgc).addClass("selected_img");
-					    getYiiImages(strain, imgc);
-						if (previousSelected != ""){
-                                                        $(previousSelected).removeClass("selected_img");        
-                                                }
+						$("img#" + strain + "_1"  + "_" + imgc+".scroll-content-item").click();
+					    getYiiImages(strain, imgc, function(){
+					    	if (previousSelected !== ""){
+                                            		$(previousSelected).removeClass("selected_img");        
+                                            	}
                                                 previousSelected = "#" + strain + "_1"  + "_" + imgc;
-                				interactImage();//$('#visImage').click();
-						var offset = 22;//this['id'] / 20;
-						if (this['id'] < 420) offset = 20;	
-						if (this['id'] < 320) offset = 17;
-						if (this['id'] < 250) offset = 15;
-						if (this['id'] < 200) offset = 14;
-						if (this['id'] < 150) offset = 12;
-						if (this['id'] < 100) offset = 10;
-						if (this['id'] < 70)  offset = 7;
-						if (this['id'] < 40)  offset = 3;
-						var yframe = this['id'] - offset;
-						$('.scroll-bar').slider('value', yframe);
-					}
-					}
+					        $(".scroll-content #" + strain + "_1_" + imgc).addClass("selected_img");
+						previousSelected = "#" + strain + "_1_" + imgc;
+						selectedTimepoint = imgc;
+						$('.scroll-bar').slider('value', imgc-(img_min));
+						$(".scroll-content #" + strain + "_1_" + imgc).addClass("selected_img");
+						$('.scroll-bar').slider('value', (imgc-img_min));
+
+					});//end getyii
+					}}
 				}//end point
 			}//end series
 		},
@@ -757,8 +754,9 @@ function initCallbackFunction(strain){
 	minval=100000;maxval=-100000;
 	for(j=0;j<dts.length;j++){	
 			hoptions.series.push({
-				data:dts[j]['dt']	
-			});
+				data:dts[j]['dt'],
+				name:dts[j]['maxv']['strain']}
+			);
 			if(dts[j]['minv']['y']<minval) minval=dts[j]['minv']['y'];
 			if(dts[j]['maxv']['y']>maxval) maxval=dts[j]['maxv']['y'];
 	}
@@ -774,89 +772,106 @@ $('#visPCA').click();
 
 
 function carouselHTML(strain, item){
-	var img_re=/([A-Z][0-9]{0,2}_[A-Z][a-zA-Z0-9]_[0-9]_[0-9]{0,3})\.jpg$/;
-	var aid=img_re.exec(item)[1];
-	item = item.replace(".jpg", "");
-	if (strain === "F29_A1" || strain === "F29_A3"){
-		//http://yeastrepo.appspot.com/yimaa_image/F29_A3/20110826-F29_A3_3_312.jpg
-		return '<img src="http://yeastrepo.appspot.com/yimaa_image/' + strain + '/'+item+'.jpg" id="'
-        +item+'" width="75px" height="75px" class="scroll-content-item"/>'
-        +'<p class="span_carousel"><span id='+item+'>'+aid+'</span></p>';
+	if (item === undefined){
+		console.log("Item is undefined, selected timepoint is " + selectedTimepoint);
+		$(".scroll-content #" + strain + "_1"  + "_" + selectedTimepoint).addClass("selected_img");
+		return;
 	}
-	return '<img src="' + strain + '/icons/'+item+'" id="'
-	+item+'" width="75px" height="75px" class="scroll-content-item"/>'
-	+'<p class="span_carousel"><span id='+item+'>'+aid+'</span></p>';
+	var aid=item.substring(0, item.length-4);
+	
+	if (strain === "F29_Summary")
+		strain = "F29_A3";
+	if (strain === "F45_Summary")
+		strain = "F45_A2";
+	if (strain === "YAD145_Summary")
+                strain = "YAD145_A2";
+	if (strain === "YO779_Summary")
+                strain = "YO779_A2"
+	item = item.replace(".jpg", "");
+	item = item.replace("20110826-", "");
+	var gaeurl = "http://yeastrepo.appspot.com/";
+	if (strain.indexOf("YAD145") !== -1){
+		gaeurl = "http://yeastimage.appspot.com/";
+	}
+	return '<img src="' + gaeurl + 'yimaa_image/' + strain + '/'+item+'.jpg" id="'
+        +item+'" width="75px" height="75px" class="scroll-content-item"/>'
+        ;//+'<p class="span_carousel"><span id='+item+'>'+aid+'</span></p>';
 };
 
-/*
-function imageHTML(item){
-var img_re=/([A-Z][0-9]{0,2}_[A-Z][a-zA-Z0-9]_[0-9]_[0-9]{0,3})\.png$/;
-var aid=img_re.exec(item)[1];
-return '<img src="20110826-F29_A1'
-+item+'" id="'
-+item+'" alt="'+item+'"/>';
-};
-*/
+
+
 function imageClick(){
-	$('.scroll-content > img').each(function(){
+	$('.scroll-content div > img').each(function(){
 		var s=this.id;
 		var s2=s.replace("jpg","png");
 		var serie = 1;
-		$(this).click(function(){
-            var tk = s.split("_");
-            var counter = parseInt(tk[tk.length-1].split(".")[0]);
-            getYiiImages(strain, counter);
-            if($('#vis_image').css("visibility")=='visible'){
-                $('#vis_image img').each(function(){
-                    $(this).css("visibility",'visible');
-                });
-            }
-            $("#"+this.id).addClass("selected_img");
-            if (previousSelected !== ""){
+	$(this).click(function(){
+		    $(this).toggleClass('selected_img');
+        	    var tk = s.split("_");
+        	    var counter = parseInt(tk[tk.length-1].split(".")[0]);
+        	    getYiiImages(strain, counter, null);
+			if($('#vis_image').css("visibility")==='visible'){
+        			$('#vis_image img').each(function(){
+                			$(this).css("visibility",'visible');
+                		});
+			}
+            	if (previousSelected !== ""){
                         $(previousSelected).removeClass("selected_img");        
                     }
                     previousSelected = "#" + this.id;
-            interactImage();
+            //interactImage();
             });//.click
 	});//each
 
 }
 function carouselLoad(strain, datas){
+	$('.scroll-bar').slider('value', 0);
 	$('#scontentid').empty();
-	var offDiv=4;
-	var offsetEnd = datas.length/offDiv; //[3,5,8,10]; 
-
+	var w=datas.length*78;
+	$('.scroll-content').css("width",w+'px');
+	var offsetEnd; 
+	var offSetWindow=35;
+	for(var j2=0;j2<datas.length;j2++){
+		$('.scroll-content').append(initializeSlider(j2, datas[j2]));
+	};
+	var itk = datas[0].split(".")[0].split("_");
+	img_min = parseInt(itk[itk.length-1]);
 	function downloadIcons(i,offSet){
-        for(i; i<offSet; i++){
-            $('.scroll-content').append(carouselHTML(strain, datas[i]));
+		//console.log("downloading icons min:" + i + " max:" + offSet);
+	        for(i; i<=offSet; i++){
+			if($('#'+i+' img')[0]===undefined){
+        			$('.scroll-content #'+i).append(carouselHTML(strain, datas[i]));
+				//if (selectedTimepoint == i){
+				//	$('.scroll-content #'+i).addClass("selected_img");
+				//}
+			}
+        	}
+        	$('.scroll-content div > img').mouseover(function(){
+           	 var img_id=$(this).attr("id");
+            	 var img_re=/([0-9]{0,3})$/;
+           	 var aid=img_re.exec(img_id)[1];
+            	 var b=aid.toString();
+            	 b=b-img_min+1;
+            	 var pnt=hchart.get(b);
+            	 pnt.onMouseOver();
+        	 }); //mouseover
+        	imageClick();
         }
-        $('.scroll-content > img').mouseover(function(){
-            var img_id=$(this).attr("id");
-            var img_re=/([0-9]{0,3})$/;
-            var aid=img_re.exec(img_id)[1];
-            var b=aid.toString();
-            b=b-img_min+1;
-            var pnt=hchart.get(b);
-            pnt.onMouseOver();
-        }); //mouseover
-        imageClick();
-	}
 	scrollbar=$('.scroll-bar').slider({
 	//step:7, //evenly divisible by (max-min)
 		slide: function(event,ui){
-            console.log(ui.value);
 			if($('.scroll-content').width() > $('.scroll-pane').width()){
 				$('.scroll-content').css("margin-left",Math.round(
 				ui.value / datas.length * ($('.scroll-pane').width()*2 - $('.scroll-content').width())
 				) +'px');
-			if(ui.value>offsetEnd-20){
-				var j=offsetEnd;
-				offsetEnd = ui.value + offsetEnd;   //datas.length/offDiv + offsetEnd;
-                if(offsetEnd > datas.length){
-                        offsetEnd = datas.length;
-                }
-				downloadIcons(j,offsetEnd);
-			}
+                                offsetEnd=ui.value+10;
+				if(offsetEnd >= datas.length){
+					offsetEnd=datas.length;
+					downloadIcons(offsetEnd-offSetWindow,offsetEnd);	
+				}
+				else{
+					downloadIcons(offsetEnd-offSetWindow,offsetEnd);
+				}
 			}
 			else{
 				$('.scroll-content').css('margin-left',0);
@@ -867,50 +882,49 @@ function carouselLoad(strain, datas){
 		min:0,
 		step:Math.floor(datas.length/100),
 		change: function(event,ui){
-		        //console.log(ui.value);
-            var carousel_change = Math.round(
-					ui.value / datas.length * ($('.scroll-pane').width()*2 - $('.scroll-content').width())
-				) +'px';
+       		var carousel_change = Math.round(ui.value / datas.length * (($('.scroll-pane').width())*2 - $('.scroll-content').width())) +'px';
 			if($('.scroll-content').width() > $('.scroll-pane').width()){
+//console.log(carousel_change+' '+ui.value);
 				$('.scroll-content').css("margin-left",carousel_change);
-				if(ui.value>offsetEnd-20){
-					var j=offsetEnd;
-					offsetEnd = ui.value + offsetEnd; //datas.length/offDiv + offsetEnd;
-                    if(offsetEnd > datas.length){
-                        offsetEnd = datas.length;
-                    }
-					downloadIcons(j,offsetEnd);
+                                //if (currentTimeseries > sliderIMax - 10){
+					//downloadIcons(currentTimeseries - 10, currentTimeseries + 10);
+				//}
+				offsetEnd = ui.value+10;
+                                if(offsetEnd >= datas.length){
+                                	offsetEnd = datas.length;
+					downloadIcons(offsetEnd-offSetWindow,offsetEnd);
 				}
-			}
-			else{
+				else{
+					downloadIcons(offsetEnd-offSetWindow,offsetEnd);
+				}
+			}else{
 				$('.scroll-content').css('margin-left',0);
 			};
 		}
 	});
-	var w=datas.length*(78);// + parseInt($('a img').css("margin-left") ) );
-	$('.scroll-content').css("width",w); 
 	console.log("start retieving " + strain + " image icons " +new Date());
-	//length fluctuates around 400-500
-	downloadIcons(0,offsetEnd);
+	downloadIcons(0,offSetWindow);
 	console.log("done retieving " + strain + " image icons " +new Date());  
-	//for F29_A3, use GAE http://yeastrepo.appspot.com/yimaa_image/F29_A3/20110826-F29_A3_3_312.jpg
-
-	var img_re=/[A-Z][0-9]{0,2}_[A-Z][a-zA-Z0-9]_[0-9]_([0-9]{0,3})\.jpg$/;
-	img_min=img_re.exec(datas[0])[1];
-	var img_max=img_re.exec(datas[datas.length-1])[1];
+	//var img_re=/[A-Z][0-9]{0,2}_[A-Z][a-zA-Z0-9]_[0-9]_([0-9]{0,3})\.jpg$/;
+	//img_min=img_re.exec(datas[0])[1];
+	var itk = datas[0].split(".")[0].split("_");
+	img_min = parseInt(itk[itk.length-1]);
+	var itk2 = datas[datas.length-1].split(".")[0].split("_");
+	//var img_max=img_re.exec(datas[datas.length-1])[1];
+	var img_max = parseInt(itk2[itk2.length-1]);
 	$('#img_span').text('/'+img_max);
 }; //EOF carouselLoad
 	
 $('.scroll-content').mousewheel(function(event, delta, deltaX, deltaY){
 	var v=scrollbar.slider('value');
-	if(delta <0){
+	if(delta<0){
 		v=v+6;
-	}
-	else if (delta >0){
-		v=v-6;
-	}
 	scrollbar.slider('value',v);
-//console.log(v);
+	}
+	else{
+		v=v-6;
+	scrollbar.slider('value',v);
+	}
 	return false;
 });
 
@@ -950,8 +964,8 @@ function scatterAnimationContinue(scatter_object){
             console.log("Scatter plot done " + new Date());
         }
             if(data_counter > 88){
-		$("#img_status").html(strain + " - timepoint:" + data_counter);
-                getYiiImages(strain[0], data_counter);
+		//$("#img_status").html(strain + " - timepoint:" + data_counter);
+                getYiiImages(strain[0], data_counter,null);
 		//interactImage();
             }else{
                  $("#img_status").html(strain + " does not have image data for timepoint " + data_counter);
